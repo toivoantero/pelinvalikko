@@ -9,7 +9,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "start": "node server.js",
-"serve": "node dist/index.html"
+"serve": "node dist/assets/index-cf94fd84.js"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
