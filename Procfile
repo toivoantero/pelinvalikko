@@ -1,1 +1,1 @@
-web: node pelivalikkoServer.js
+web: npm run serve
