@@ -1,7 +1,8 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 app.use(express.json());
@@ -15,22 +16,16 @@ const db = new sqlite3.Database('pelivalikko.db', (error) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
-
 // Staattisten tiedostojen palveleminen (esim. index.html, index.js, jne.)
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Reititykset React-sovelluksen polkujen mukaan
+// Reititykset React-sovelluksen polkujen mukaan, kuten `/` (pääsivu) ja muut API-reititykset, joita React-sovellus voi käyttää.
 app.get('/', (req, res) => {
     // Palauta React-sovelluksen pääsivu
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// Määrittele muut reititykset tarpeesi mukaan
-// Esimerkiksi:
-
+// Määrittele API-reititykset
 app.get('/api/hahmo/all', (req, res) => {
     // Palauta kaikki hahmot tietokannasta
     db.all('SELECT * FROM hahmo', (error, result) => {
@@ -57,9 +52,9 @@ app.post('/api/hahmo/add', (req, res) => {
     );
 });
 
-// Lisää tarvittavat reititykset tähän...
+// Muut reititykset tarpeesi mukaan...
 
-// Muut polut ohjataan React-sovellukselle
+// Käsittely React-sovelluksen reiteille
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
@@ -70,3 +65,7 @@ app.use((err, req, res, next) => {
     res.status(500).send('Internal Server Error');
 });
 
+// Kuuntele määritettyä porttia
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
