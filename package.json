@@ -9,7 +9,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "start": "node pelivalikkoServer.cjs",
-"serve": "node dist/index.html"
+    "serve": "node dist/index.html"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -22,7 +22,8 @@
     "express": "^4.18.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.18.0"
+    "react-router-dom": "^6.18.0",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
