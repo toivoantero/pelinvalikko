@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
 });
 
 // Määrittele API-reititykset
-app.get('/api/hahmo/all', (req, res) => {
+app.get('https://pelivalikkoreactnode.onrender.com/api/hahmo/all', (req, res) => {
     // Palauta kaikki hahmot tietokannasta
     db.all('SELECT * FROM hahmo', (error, result) => {
         if (error) {
@@ -45,7 +45,7 @@ app.get('/api/hahmo/all', (req, res) => {
     });
 });
 
-app.post('/api/hahmo/add', (req, res) => {
+app.post('https://pelivalikkoreactnode.onrender.com/api/hahmo/add', (req, res) => {
     // Lisää uusi hahmo tietokantaan
     const { nimi, ammatti, ika, kokemuspisteet, ase } = req.body;
     db.run('INSERT INTO hahmo (nimi, ammatti, ika, kokemuspisteet, ase) VALUES (?, ?, ?, ?, ?)',
