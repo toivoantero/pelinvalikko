@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require('http');  // Lisää tämä rivi
 const fs = require('fs');
 const path = require('path');
 const app = express();
@@ -14,6 +15,13 @@ const db = new sqlite3.Database('pelivalikko.db', (error) => {
         // Palauta virhe jos tietokantaa ei voida avata
         throw error;
     }
+});
+
+// Luo HTTP-palvelin
+const server = http.createServer(app);  // Luo HTTP-palvelin
+
+server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
 
 // Staattisten tiedostojen palveleminen (esim. index.html, index.js, jne.)
@@ -63,9 +71,4 @@ app.get('*', (req, res) => {
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Internal Server Error');
-});
-
-// Kuuntele määritettyä porttia
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
 });
