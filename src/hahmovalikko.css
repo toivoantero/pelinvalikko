@@ -1,6 +1,6 @@
 
 body {
-  background-image: url('/api/kuvat/tausta.jpg');
+  background-image: url('/api/lataa/kuvat/tausta.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
