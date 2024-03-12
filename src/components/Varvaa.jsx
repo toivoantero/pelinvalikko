@@ -193,7 +193,7 @@ function Varvaa() {
                         {hahmo.kuva ?
                             <CardMedia sx={{ height: 'auto', width: 200 }}
                                 component='img'
-                                image={'http://localhost:8080/lataa/' + hahmo.kuva}
+                                image={'/api/lataa/' + hahmo.kuva}
                                 alt={hahmo.nimi} />
                             :
                             <Typography sx={{ height: 'auto', width: 200 }}></Typography>}

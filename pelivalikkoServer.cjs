@@ -121,7 +121,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage })
-
+/*
 app.post('/api/hahmo/add', (req, res) => {
     // Lisää uusi hahmo tietokantaan
     const { nimi, ammatti, ika, kokemuspisteet, ase } = req.body;
@@ -135,6 +135,21 @@ app.post('/api/hahmo/add', (req, res) => {
             return res.status(201).json({ message: 'Hahmo lisätty onnistuneesti' });
         }
     );
+});
+*/
+app.post('/api/hahmo/add', upload.single('kuva'), (req, res) => {
+    let hahmo = req.body;
+
+    db.run('insert into hahmo (nimi,ammatti,ika,kokemuspisteet,ase,kuva) values (?, ?, ?, ?, ?, ?)',
+        [hahmo.nimi, hahmo.ammatti, hahmo.ika, hahmo.kokemuspisteet, hahmo.ase, hahmo.kuva], (error) => {
+
+            if (error) {
+                console.log(error.message);
+                return res.status(400).json({ message: error.message });
+            }
+
+            return res.status(200).json({ count: 1 });
+        });
 });
 
 app.get('/api/lataa/:nimi', (req, res) => {
