@@ -62,7 +62,7 @@ function Identiteetti() {
                 {hahmo.kuva ?
                     <CardMedia sx={{ height: 'auto', width: 200 }}
                         component='img'
-                        image={'http://localhost:8080/lataa/' + hahmo.kuva}
+                        image={'/api/lataa/' + hahmo.kuva}
                         alt={hahmo.nimi} />
                     :
                     <Typography sx={{ height: 100, width: 200 }}>Ei kuvaa</Typography>}
