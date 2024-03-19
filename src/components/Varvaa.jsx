@@ -1,38 +1,22 @@
 import { useState, useEffect } from 'react';
 import { FormControl, Stack, CardMedia, Select, Slider, Box, TextField, Button, InputLabel, Typography, MenuItem } from '@mui/material';
 import { PaperOpaque } from '../App';
-import { Form, redirect } from 'react-router-dom';
+import { Form } from 'react-router-dom';
 import { addHahmo, getHahmot, getVarusteetOmat } from './pelidata';
-
-export async function LomakeAction({ request }) {
-    const formData = await request.formData();
-    const ammatti = formData.get('ammatti');
-    let hahmotResponse = await getHahmot();
-    let response;
-
-    if (hahmotResponse.data.length < 6 && ammatti) {
-        response = await addHahmo(formData);
-    } else {
-        response = "";
-    }
-    if (response.status === 400) {
-        throw Error(response.message);
-    }
-    return redirect('/varvaa');
-}
 
 function Varvaa() {
     const [hahmot, setHahmot] = useState([]);
-    const [lisatty, setLisatty] = useState([]);
     const [viesti, setViesti] = useState('');
+    const [kuvakytkin, setKuvakytkin] = useState(true);
     const [aseet, setAseet] = useState([]);
+    const [lisatty, setLisatty] = useState([{ kuva: 'tyhjahahmo.png' }]);
     const [hahmo, setHahmo] = useState({
         nimi: '',
         ammatti: '',
         ika: 30,
         kokemuspisteet: 1.74,
         ase: '',
-        kuva: ''
+        kuva: 'tyhjahahmo.png',
     });
 
     const fetchData = async () => {
@@ -51,95 +35,155 @@ function Varvaa() {
         }
     }
 
-    const muutaTieto = (e) => {
-        setHahmo({ ...hahmo, [e.target.name]: e.target.value });
-    }
-
-    const lisaaHahmo = () => {
+    const lisaaHahmo = async () => {
         if (hahmot.length < 6) {
             if (hahmo.ammatti.trim() !== '') {
-                setLisatty([...lisatty, hahmo]);
-                setViesti('Tervetuloa ryhmään! ');
+                try {
+                    const response = await addHahmo(hahmo);
+                    if (response.status === 200) {
+                        setKuvakytkin(true);
+                        setViesti(
+                            <Box>
+                                <Typography sx={{ color: "#FFCC33" }}>Tervetuloa ryhmään! </Typography>
+                                <Box sx={{ color: 'white' }}>
+                                    <Typography>Nimi: {hahmo.nimi}</Typography>
+                                    <Typography>Ammatti: {hahmo.ammatti}</Typography>
+                                    <Typography>Ikä: {hahmo.ika}</Typography>
+                                    <Typography>Taso: {Math.floor(hahmo.kokemuspisteet)}</Typography>
+                                </Box>
+                            </Box>
+                        );
+                        setHahmot([...hahmot, hahmo]);
+                        setHahmo({
+                            ...hahmo,
+                            nimi: '',
+                            ammatti: '',
+                            ika: 30,
+                            kokemuspisteet: 1.74,
+                            ase: '',
+                            kuva: ''
+                        });
+                    } else {
+                        setViesti('Seikkailijan värvääminen epäonnistui.');
+                    }
+                } catch (error) {
+                    console.error('Virhe lisäyksessä:', error);
+                }
             } else {
-                setViesti('Valitse värvättävän seikkailijan ammatti.');
+                setKuvakytkin(false);
+                setViesti(
+                    <Typography sx={{ color: "#FFCC33", width: 400, textAlign: 'center' }}>Valitse värvättävän<br></br>seikkailijan ammatti.</Typography>
+                );
             }
         } else {
-            setLisatty([]);
-            setViesti('Seikkailijoiden ryhmään ei mahdu enempää, kuin 6.');
+            setKuvakytkin(false);
+            setViesti(
+                <Typography sx={{ color: "#FFCC33", width: 400, textAlign: 'center' }}>Seikkailijoiden ryhmään<br></br>ei mahdu enempää, kuin 6.</Typography>
+            );
         }
+    }
+
+    const valintaIkaAmmatti = (e) => {
+        setHahmo({ ...hahmo, [e.target.name]: e.target.value });
+        setViesti('');
     }
 
     const taydennaSeikkailija = () => {
-        if (aseet.length > 0) {
-            //const nimet = ["Visa", "Hildegard", "Mustaparta", "Ansgarius", "Saga", "Oni"];
+
+        const valintaAse = () => {
+            if (aseet.length > 0) {
+                let aseetAmmatinMukaan;
+                if (hahmo.ammatti === "Tiedustelija") {
+                    aseetAmmatinMukaan = aseet.filter(ase => ase.paino < 10);
+                } else if (hahmo.ammatti === "Ritari") {
+                    aseetAmmatinMukaan = aseet.filter(ase => ase.paino > 8);
+                } else if (hahmo.ammatti === "Strategi") {
+                    aseetAmmatinMukaan = aseet.filter(ase => ase.tyyppi === "Yhden käden" && ase.paino < 5);
+                }
+                if (aseetAmmatinMukaan && aseetAmmatinMukaan.length > 0) {
+                    const satunnainenAse = aseetAmmatinMukaan[Math.floor(Math.random() * aseetAmmatinMukaan.length)];
+                    return satunnainenAse.nimi;
+                }
+                return '';
+            }
+        }
+
+        const valintaNimi = () => {
+            let satunnainenNimilista;
+            let satunnainenNimi;
             const nimet = {
                 neutraali: ["neut1", "neut2"],
                 mies: ["mies1", "mies2"],
-                nainen: ["nainen2", "nainen2"],
+                nainen: ["nainen1", "nainen2"],
             };
-            let uudetAseet;
-
-            if (hahmo.ammatti === "Tiedustelija") {
-                uudetAseet = aseet.filter(ase => ase.paino < 10);
-            } else if (hahmo.ammatti === "Ritari") {
-                uudetAseet = aseet.filter(ase => ase.paino > 8);
-            } else if (hahmo.ammatti === "Strategi") {
-                uudetAseet = aseet.filter(ase => ase.tyyppi === "Yhden käden" && ase.paino < 5);
-            }
-
-            if (uudetAseet) {
-                const satunnainenAse = uudetAseet[Math.floor(Math.random() * uudetAseet.length)];
-                const satunnainenNimilista =
+            do {
+                satunnainenNimilista =
                     Math.random() < 0.33 ? nimet.neutraali :
                         Math.random() < 0.66 ? nimet.mies :
                             nimet.nainen;
-                // Koska const ei muutu? vaan kerran asettettu arvo pysyy?
-                const satunnainenNimi = satunnainenNimilista[Math.floor(Math.random() * satunnainenNimilista.length)];
-
-                if (hahmo.ammatti === "Tiedustelija") {
-                    setHahmo({ ...hahmo, nimi: satunnainenNimi, ase: satunnainenAse.nimi, });
-                    if (satunnainenNimilista === nimet.neutraali) {
-                        setHahmo({ ...hahmo, kuva: 'tiedustelija.png' });
-                    } else if (satunnainenNimilista === nimet.mies) {
-                        setHahmo({ ...hahmo, kuva: 'tiedustelija.png' });
-                    } else if (satunnainenNimilista === nimet.nainen) {
-                        setHahmo({ ...hahmo, kuva: 'tiedustelija.png' });
-                    } else {
-                        console.log("Jotain meni pieleen.");
-                    }
-                } else if (hahmo.ammatti === "Ritari") {
-                    setHahmo({ ...hahmo, nimi: satunnainenNimi, ase: satunnainenAse.nimi });
-                    if (satunnainenNimilista === nimet.neutraali) {
-                        setHahmo({ ...hahmo, kuva: 'ritari.png' });
-                    } else if (satunnainenNimilista === nimet.mies) {
-                        setHahmo({ ...hahmo, kuva: 'ritari.png' });
-                    } else if (satunnainenNimilista === nimet.nainen) {
-                        setHahmo({ ...hahmo, kuva: 'ritari.png' });
-                    } else {
-                        console.log("Jotain meni pieleen.");
-                    }
-                } else if (hahmo.ammatti === "Strategi") {
-                    setHahmo({ ...hahmo, nimi: satunnainenNimi, ase: satunnainenAse.nimi });
-                    if (satunnainenNimilista === nimet.neutraali) {
-                        setHahmo({ ...hahmo, kuva: 'strategi_neut.png' });
-                    } else if (satunnainenNimilista === nimet.mies) {
-                        setHahmo({ ...hahmo, kuva: 'strategi_m.png' });
-                    } else if (satunnainenNimilista === nimet.nainen) {
-                        setHahmo({ ...hahmo, kuva: 'strategi_n.png' });
-                    } else {
-                        console.log("Jotain meni pieleen.");
-                    }
-                }
-                console.log(hahmo);
-            }
+                satunnainenNimi = satunnainenNimilista[Math.floor(Math.random() * satunnainenNimilista.length)];
+            } while (satunnainenNimi === lisatty[lisatty.length - 1].nimi); // Jotta ei seuraavalla hahmolle tulisi samaa nimeä, kuin edelliselle.
+            return { nimi: satunnainenNimi, nimilista: satunnainenNimilista, nimiobjekti: nimet };
         }
+
+        const valintaKuva = (satunnainenNimilista, nimet) => {
+            let kuvaNimenJaAmmatinMukaan = null;
+            if (hahmo.ammatti === "Strategi") {
+                if (satunnainenNimilista === nimet.neutraali) {
+                    kuvaNimenJaAmmatinMukaan = 'strategi_neut.png';
+                } else if (satunnainenNimilista === nimet.mies) {
+                    kuvaNimenJaAmmatinMukaan = 'strategi_m.png';
+                } else if (satunnainenNimilista === nimet.nainen) {
+                    kuvaNimenJaAmmatinMukaan = 'strategi.png';
+                } else {
+                    console.log("Jotain meni pieleen.");
+                }
+            } else if (hahmo.ammatti === "Ritari") {
+                if (satunnainenNimilista === nimet.neutraali) {
+                    kuvaNimenJaAmmatinMukaan = 'ritari.png';
+                } else if (satunnainenNimilista === nimet.mies) {
+                    kuvaNimenJaAmmatinMukaan = 'ritari.png';
+                } else if (satunnainenNimilista === nimet.nainen) {
+                    kuvaNimenJaAmmatinMukaan = 'ritari.png';
+                } else {
+                    console.log("Jotain meni pieleen.");
+                }
+            } else if (hahmo.ammatti === "Tiedustelija") {
+                if (satunnainenNimilista === nimet.neutraali) {
+                    kuvaNimenJaAmmatinMukaan = 'tiedustelija.png';
+                } else if (satunnainenNimilista === nimet.mies) {
+                    kuvaNimenJaAmmatinMukaan = 'tiedustelija.png';
+                } else if (satunnainenNimilista === nimet.nainen) {
+                    kuvaNimenJaAmmatinMukaan = 'tiedustelija.png';
+                } else {
+                    console.log("Jotain meni pieleen.");
+                }
+            }
+            return kuvaNimenJaAmmatinMukaan;
+        }
+
+        const { nimi, nimilista, nimiobjekti } = valintaNimi();
+        const kuva = valintaKuva(nimilista, nimiobjekti);
+        const ase = valintaAse();
+
+        setHahmo({ ...hahmo, nimi: nimi, ase: ase, kuva: kuva });
     }
 
-    useEffect(() => { fetchData() }, []);
+    useEffect(() => { fetchData(), setKuvakytkin(true), console.log(hahmo.kuva) }, []);
     useEffect(() => { fetchData() }, [hahmo]);
     useEffect(() => {
         taydennaSeikkailija();
+        setKuvakytkin(true);
     }, [hahmo.ammatti]);
+
+    const lisattyVarastoon = () => {
+        setLisatty([{ nimi: hahmo.nimi, kuva: hahmo.kuva }]);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        lisaaHahmo();
+    };
 
     return (
         <Stack
@@ -150,13 +194,9 @@ function Varvaa() {
             marginX="auto"
             width="80vw"
             justifyContent="center">
-            <Form action='uusi' method='post' encType='multipart/form-data'>
+            <Form onSubmit={handleSubmit} encType='multipart/form-data'>
                 <Box sx={{ width: '30vw' }}>
                     <Typography paddingTop={2} paddingBottom={4}>Valitse mitä ammattia haluat seikkailijasi<br></br>edustavan ja minkä ikäinen hän on.</Typography>
-                    <TextField type='hidden' name='nimi' value={hahmo.nimi} />
-                    <TextField type='hidden' name='ase' value={hahmo.ase} />
-                    <TextField type='hidden' name='kokemuspisteet' value={hahmo.kokemuspisteet} />
-                    <TextField type='hidden' name='kuva' value={hahmo.kuva} />
                     <FormControl fullWidth>
                         <InputLabel id="ammatti-label">Ammatti</InputLabel>
                         <Select
@@ -165,7 +205,7 @@ function Varvaa() {
                             label="Ammatti"
                             name='ammatti'
                             value={hahmo.ammatti}
-                            onChange={muutaTieto}
+                            onChange={valintaIkaAmmatti}
                         >
                             <MenuItem value="Ritari">Ritari</MenuItem>
                             <MenuItem value="Tiedustelija">Tiedustelija</MenuItem>
@@ -180,40 +220,44 @@ function Varvaa() {
                         min={15}
                         max={100}
                         value={hahmo.ika}
-                        onChange={muutaTieto}>
+                        onChange={valintaIkaAmmatti}>
                     </Slider>
 
-                    <Button type='submit' onClick={lisaaHahmo} sx={{ marginTop: 4 }} variant='outlined' color="secondary" >Värvää</Button>
+                    <Button type='submit' sx={{ marginTop: 4 }} variant='outlined' color="secondary" onClick={lisattyVarastoon}>Värvää</Button>
                 </Box>
             </Form>
 
             <PaperOpaque>
-                <Box sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-                    <Box>
-                        {hahmo.kuva ?
-                            <CardMedia sx={{ height: 'auto', width: 200 }}
-                                component='img'
-                                image={'/api/lataa/' + hahmo.kuva}
-                                alt={hahmo.nimi} />
-                            :
-                            <Typography sx={{ height: 'auto', width: 200 }}></Typography>}
+                <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', minWidth: 400 }}>
+                    {kuvakytkin == true ?
+                        <Box>
+                            {hahmo.kuva ?
+                                <CardMedia sx={{ height: 'auto', width: 200 }}
+                                    component='img'
+                                    //image={'/api/lataa/'
+                                    image={'http://localhost:8080/lataa/' + hahmo.kuva}
+                                    alt={hahmo.nimi}
+                                />
+                                :
+                                <CardMedia sx={{ height: 'auto', width: 200 }}
+                                    component='img'
+                                    //image={'/api/lataa/'
+                                    image={'http://localhost:8080/lataa/' + lisatty[lisatty.length - 1].kuva}
+                                    alt={hahmo.nimi}
+                                />
+                            }
+                        </Box>
+                        :
+                        <Box sx={{ height: 'auto', width: 'auto' }}></Box>
+                    }
+                    <Box sx={{ position: 'relative', left: '0%', minWidth: 200 }}>
+                        {viesti}
                     </Box>
 
-                    <Box sx={{ position: 'relative', left: '0%', minWidth: '200px' }}>
-                        <Typography sx={{ color: "#FFCC33" }}>{viesti}</Typography>
-
-                        {lisatty.length > 0 && (
-                            <Box sx={{ color: 'white' }}>
-                                <Typography>Nimi: {lisatty[lisatty.length - 1].nimi}</Typography>
-                                <Typography>Ammatti: {lisatty[lisatty.length - 1].ammatti}</Typography>
-                                <Typography>Ikä: {lisatty[lisatty.length - 1].ika}</Typography>
-                                <Typography>Taso: {Math.floor(lisatty[lisatty.length - 1].kokemuspisteet)}</Typography>
-                            </Box>
-                        )}
-                    </Box>
                 </Box>
             </PaperOpaque>
         </Stack>
     );
 }
+
 export default Varvaa;

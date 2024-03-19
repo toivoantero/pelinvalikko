@@ -1,7 +1,25 @@
-
 body {
   background-image: url("/tausta.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+/*
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 5s ease-out;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 5s ease-out;
+}
+*/

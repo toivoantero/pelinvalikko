@@ -46,7 +46,6 @@ function Kauppa() {
             setKaupanMuutos([myytava, ...kaupanMuutos]);
             setRahat(rahat + myytava.hinta);
             console.log(myytava.nimi + " myyty.");
-            alert('Tämä toiminto ei toimi vielä niin kuin pitäisi. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Värvääminen, (2) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (3) Värvättyjen seikkailijoiden tietojen muuttaminen, (4) Kauppa, (5) ”Pelivalinnat”-valikko.');
         }
     }
     const osta = () => {
@@ -55,7 +54,6 @@ function Kauppa() {
             setOmatMuutos([ostettava, ...omatMuutos]);
             setRahat(rahat - ostettava.hinta);
             console.log(ostettava.nimi + " ostettu.");
-            alert('Tämä toiminto ei toimi vielä niin kuin pitäisi. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Värvääminen, (2) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (3) Värvättyjen seikkailijoiden tietojen muuttaminen, (4) Kauppa, (5) ”Pelivalinnat”-valikko.');
         }
     }
 

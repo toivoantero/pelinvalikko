@@ -49,10 +49,6 @@ function Identiteetti() {
         });
     };
 
-    const ilmoitus = () => {
-        alert('Tämä toiminto ei ole vielä toimintakunnossa. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Värvääminen, (2) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (3) Värvättyjen seikkailijoiden tietojen muuttaminen, (4) Kauppa, (5) ”Pelivalinnat”-valikko.');
-    }
-
     return (
         <Stack
             className="custom-textfield"
@@ -139,7 +135,7 @@ function Identiteetti() {
                         </Select>
                     </FormControl>
 
-                    <Button color="secondary" variant='outlined' onClick={ilmoitus}>Vahvista muutos</Button>
+                    <Button color="secondary" variant='outlined'>Vahvista muutos</Button>
                 </Box>
                 <Form action='/poisto' method='post'>
                     <input type='hidden' name='id' value={hahmo.id} />

@@ -1,5 +1,5 @@
 import Valilehdet from './components/Valilehdet';
-import Varvaa/*, { LomakeAction } */from './components/Varvaa';
+import Varvaa, { LomakeAction } from './components/Varvaa';
 import Varustus, { VarustusLoader } from './components/Varustus';
 import Kauppa from './components/Kauppa';
 import Identiteetti, { YksiloLoader, PoistoAction } from './components/Identiteetti';
@@ -75,10 +75,10 @@ const router = createBrowserRouter([
         path: 'varvaa',
         element: <Varvaa />,
       },
-      //{
-        //path: 'varvaa/uusi',
-        //action: LomakeAction
-      //},
+      {
+        path: 'varvaa/uusi',
+        action: LomakeAction
+      },
       {
         path: 'varustus',
         element: <Varustus />,

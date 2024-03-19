@@ -20,10 +20,6 @@ function Valilehdet() {
     setMenuAuki(null);
   }
 
-  const ilmoitus = () => {
-    alert('Tämä toiminto ei ole vielä toimintakunnossa. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Värvääminen, (2) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (3) Värvättyjen seikkailijoiden tietojen muuttaminen, (4) Kauppa, (5) ”Pelivalinnat”-valikko.');
-  }
-
   return (
     <Box>
       <AppBar position='static' sx={{ flexDirection: "row", backgroundColor: "rgb(12,17,25)" }}>
@@ -36,19 +32,19 @@ function Valilehdet() {
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
           <MenuItem onClick={menuKiinni}>
-            <ListItemText primary='Uusi peli' onClick={ilmoitus} />
+            <ListItemText primary='Uusi peli' />
           </MenuItem>
           <MenuItem onClick={menuKiinni}>
-            <ListItemText primary='Tallenna peli' onClick={ilmoitus} />
+            <ListItemText primary='Tallenna peli' />
           </MenuItem>
           <MenuItem onClick={menuKiinni}>
-            <ListItemText primary='Lataa peli' onClick={ilmoitus} />
+            <ListItemText primary='Lataa peli' />
           </MenuItem>
           <MenuItem onClick={menuKiinni}>
-            <ListItemText primary='Palaa päävalikkoon' onClick={ilmoitus} />
+            <ListItemText primary='Palaa päävalikkoon' />
           </MenuItem>
           <MenuItem onClick={menuKiinni}>
-            <ListItemText primary='Lopeta peli' onClick={ilmoitus} />
+            <ListItemText primary='Lopeta peli' />
           </MenuItem>
         </Menu>
 
