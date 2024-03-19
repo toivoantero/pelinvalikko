@@ -112,9 +112,9 @@ function Varvaa() {
             let satunnainenNimilista;
             let satunnainenNimi;
             const nimet = {
-                neutraali: ["neut1", "neut2"],
-                mies: ["mies1", "mies2"],
-                nainen: ["nainen1", "nainen2"],
+                neutraali: ["Oni", "Kide", "Ashley"],
+                mies: ["Visa", "Balthasar", "Ansgarius"],
+                nainen: ["Saga", "Hildegard", "Megara"],
             };
             do {
                 satunnainenNimilista =
@@ -128,13 +128,14 @@ function Varvaa() {
 
         const valintaKuva = (satunnainenNimilista, nimet) => {
             let kuvaNimenJaAmmatinMukaan = null;
+            const arvottuLuku = Math.floor(Math.random() * 2);
             if (hahmo.ammatti === "Strategi") {
                 if (satunnainenNimilista === nimet.neutraali) {
-                    kuvaNimenJaAmmatinMukaan = 'strategi_neut.png';
+                    kuvaNimenJaAmmatinMukaan = arvottuLuku === 0 ? 'strategi_m.png' : 'strategi_n.png';
                 } else if (satunnainenNimilista === nimet.mies) {
                     kuvaNimenJaAmmatinMukaan = 'strategi_m.png';
                 } else if (satunnainenNimilista === nimet.nainen) {
-                    kuvaNimenJaAmmatinMukaan = 'strategi.png';
+                    kuvaNimenJaAmmatinMukaan = 'strategi_n.png';
                 } else {
                     console.log("Jotain meni pieleen.");
                 }
@@ -150,11 +151,11 @@ function Varvaa() {
                 }
             } else if (hahmo.ammatti === "Tiedustelija") {
                 if (satunnainenNimilista === nimet.neutraali) {
-                    kuvaNimenJaAmmatinMukaan = 'tiedustelija.png';
+                    kuvaNimenJaAmmatinMukaan = arvottuLuku === 0 ? 'tiedustelija_m.png' : 'tiedustelija_n.png';
                 } else if (satunnainenNimilista === nimet.mies) {
-                    kuvaNimenJaAmmatinMukaan = 'tiedustelija.png';
+                    kuvaNimenJaAmmatinMukaan = 'tiedustelija_m.png';
                 } else if (satunnainenNimilista === nimet.nainen) {
-                    kuvaNimenJaAmmatinMukaan = 'tiedustelija.png';
+                    kuvaNimenJaAmmatinMukaan = 'tiedustelija_n.png';
                 } else {
                     console.log("Jotain meni pieleen.");
                 }
