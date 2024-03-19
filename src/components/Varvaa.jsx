@@ -234,15 +234,15 @@ function Varvaa() {
                             {hahmo.kuva ?
                                 <CardMedia sx={{ height: 'auto', width: 200 }}
                                     component='img'
-                                    //image={'/api/lataa/'
-                                    image={'http://localhost:8080/lataa/' + hahmo.kuva}
+                                    image={'/api/lataa/' + hahmo.kuva}
+                                    //image={'http://localhost:8080/lataa/' + hahmo.kuva}
                                     alt={hahmo.nimi}
                                 />
                                 :
                                 <CardMedia sx={{ height: 'auto', width: 200 }}
                                     component='img'
-                                    //image={'/api/lataa/'
-                                    image={'http://localhost:8080/lataa/' + lisatty[lisatty.length - 1].kuva}
+                                    image={'/api/lataa/' + lisatty[lisatty.length - 1].kuva}
+                                    //image={'http://localhost:8080/lataa/' + lisatty[lisatty.length - 1].kuva}
                                     alt={hahmo.nimi}
                                 />
                             }

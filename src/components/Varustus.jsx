@@ -41,8 +41,8 @@ function Varustus() {
                                 {objekti.kuva ?
                                     <CardMedia sx={{ height: 'auto', width: 200 }}
                                         component='img'
-                                        //image={'/api/lataa/' + objekti.kuva}
-                                        image={'http://localhost:8080/lataa/' + objekti.kuva}
+                                        image={'/api/lataa/' + objekti.kuva}
+                                        //image={'http://localhost:8080/lataa/' + objekti.kuva}
                                         alt={objekti.nimi} />
                                     :
                                     <Typography sx={{ height: 100, width: 200 }}>Ei kuvaa</Typography>}
