@@ -4,6 +4,8 @@ import Varustus, { VarustusLoader } from './components/Varustus';
 import Kauppa from './components/Kauppa';
 import Identiteetti, { YksiloLoader, PoistoAction } from './components/Identiteetti';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import LoginPage from './components/LoginPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import { createContext, useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -65,37 +67,42 @@ export const PaperOpaque = styled(Paper)(() => ({
 
 const router = createBrowserRouter([
   {
-    element: <Valilehdet />,
+    path: '/',
+    element: <LoginPage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/app',
+    element: <ProtectedRoute><Valilehdet /></ProtectedRoute>,
     children: [
       {
-        path: '/',
-        element: null
-      },
-      {
-        path: 'varvaa',
+        path: '/app/',
         element: <Varvaa />,
       },
-      //{
-        //path: 'varvaa/uusi',
-        //action: LomakeAction
-      //},
       {
-        path: 'varustus',
+        path: '/app/varvaa',
+        element: <Varvaa />,
+      },
+      {
+        path: '/app/varustus',
         element: <Varustus />,
         loader: VarustusLoader,
       },
       {
-        path: 'poisto',
+        path: '/app/poisto',
         action: PoistoAction,
       },
       {
-        path: 'muokkaa/:id/:nimi/:ammatti/:ika/:kokemuspisteet/:ase/:kuva',
+        path: '/app/muokkaa/:id/:nimi/:ammatti/:ika/:kokemuspisteet/:ase/:kuva',
         element: <Identiteetti />,
         loader: YksiloLoader,
       },
       {
-        path: 'kauppa',
-        element: <Kauppa />
+        path: '/app/kauppa',
+        element: <Kauppa />,
       },
     ],
   },

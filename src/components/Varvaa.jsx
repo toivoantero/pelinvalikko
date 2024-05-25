@@ -14,7 +14,7 @@ function Varvaa() {
         nimi: '',
         ammatti: '',
         ika: 30,
-        kokemuspisteet: 1.76,
+        kokemuspisteet: 1.74,
         ase: '',
         kuva: 'tyhjahahmo.png',
     });
@@ -59,7 +59,7 @@ function Varvaa() {
                             nimi: '',
                             ammatti: '',
                             ika: 30,
-                            kokemuspisteet: 1.76,
+                            kokemuspisteet: 1.74,
                             ase: '',
                             kuva: ''
                         });
@@ -170,7 +170,7 @@ function Varvaa() {
         setHahmo({ ...hahmo, nimi: nimi, ase: ase, kuva: kuva });
     }
 
-    useEffect(() => { fetchData(), setKuvakytkin(true), console.log(hahmo.kuva) }, []);
+    useEffect(() => { fetchData(), setKuvakytkin(true) }, []);
     useEffect(() => { fetchData() }, [hahmo]);
     useEffect(() => {
         taydennaSeikkailija();
