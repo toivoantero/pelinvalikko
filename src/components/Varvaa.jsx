@@ -14,7 +14,7 @@ function Varvaa() {
         nimi: '',
         ammatti: '',
         ika: 30,
-        kokemuspisteet: 1.74,
+        kokemuspisteet: 1.76,
         ase: '',
         kuva: 'tyhjahahmo.png',
     });
@@ -59,7 +59,7 @@ function Varvaa() {
                             nimi: '',
                             ammatti: '',
                             ika: 30,
-                            kokemuspisteet: 1.74,
+                            kokemuspisteet: 1.76,
                             ase: '',
                             kuva: ''
                         });
