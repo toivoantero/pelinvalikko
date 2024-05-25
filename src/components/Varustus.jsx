@@ -27,7 +27,7 @@ function Varustus() {
                 let kuva = encodeURIComponent(objekti.kuva);
                 return (
                     <Grid item key={objekti.id}
-                        to={'/muokkaa/' + objekti.id + '/' + objekti.nimi + '/' + objekti.ammatti + '/' + objekti.ika + '/' + objekti.kokemuspisteet + '/' + objekti.ase + '/' + kuva}
+                        to={'/app/muokkaa/' + objekti.id + '/' + objekti.nimi + '/' + objekti.ammatti + '/' + objekti.ika + '/' + objekti.kokemuspisteet + '/' + objekti.ase + '/' + kuva}
                         component={Link}
                         sx={{textDecoration: 'none'}}
                     >

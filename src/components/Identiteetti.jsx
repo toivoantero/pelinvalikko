@@ -12,7 +12,7 @@ export async function PoistoAction({ request }) {
     if (response.status === 400 || response.status === 404) {
         throw Error(response.message);
     }
-    return redirect('/varustus');
+    return redirect('/app/varustus');
 }
 
 export async function YksiloLoader() {
@@ -50,7 +50,7 @@ function Identiteetti() {
     };
 
     const ilmoitus = () => {
-        alert('Tämä toiminto ei ole vielä toimintakunnossa. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Värvääminen, (2) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (3) Värvättyjen seikkailijoiden tietojen muuttaminen, (4) Kauppa, (5) ”Pelivalinnat”-valikko.');
+        alert('Tämä toiminto ei ole vielä toimintakunnossa. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Sisäänkirjautuminen, (2) Värvääminen, (3) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (4) Värvättyjen seikkailijoiden tietojen muuttaminen, (5) Kauppa.');
     }
 
     return (
@@ -141,7 +141,7 @@ function Identiteetti() {
 
                     <Button color="secondary" variant='outlined' onClick={ilmoitus}>Vahvista muutos</Button>
                 </Box>
-                <Form action='/poisto' method='post'>
+                <Form action='/app/poisto' method='post'>
                     <input type='hidden' name='id' value={hahmo.id} />
                     <Button type='submit' sx={{ marginTop: 4 }} color="primary" variant='outlined'>Irtisano seikkailija pois ryhmästä</Button>
                 </Form>

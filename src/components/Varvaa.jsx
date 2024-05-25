@@ -170,7 +170,7 @@ function Varvaa() {
         setHahmo({ ...hahmo, nimi: nimi, ase: ase, kuva: kuva });
     }
 
-    useEffect(() => { fetchData(), setKuvakytkin(true), console.log(hahmo.kuva) }, []);
+    useEffect(() => { fetchData(), setKuvakytkin(true) }, []);
     useEffect(() => { fetchData() }, [hahmo]);
     useEffect(() => {
         taydennaSeikkailija();

@@ -1,14 +1,22 @@
 const express = require('express');
 const http = require('http');
+const sqlite3 = require('sqlite3');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 const app = express();
 const port = process.env.PORT || 8080;
+const cors = require('cors');
+const saltRounds = 10;
+const jwtSecret = 'your_jwt_secret';
+let helmet = require('helmet');
 
+app.use(helmet({ crossOriginResourcePolicy: false }))
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 app.use(express.json());
+app.use(cors());
 
-const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('pelivalikko.db', (error) => {
     if (error) {
         console.log(error.message);
@@ -27,13 +35,43 @@ server.listen(port, () => {
 // Staattisten tiedostojen palveleminen (esim. index.html, index.js, jne.)
 app.use(express.static(path.join(__dirname, 'dist')));
 
+const authenticateJWT = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+
+        jwt.verify(token, jwtSecret, (err, user) => {
+            if (err) {
+                return res.sendStatus(403);
+            }
+
+            req.user = user;
+            next();
+        });
+    } else {
+        res.sendStatus(401);
+    }
+};
+
 // Määrittele API-reititykset
-app.get('/api/hahmo/all', (req, res) => {
-    // Palauta kaikki hahmot tietokannasta
-    db.all('SELECT * FROM hahmo', (error, result) => {
+app.get('/api/hahmo/all', authenticateJWT, (req, res) => {
+    const userId = req.user.id;
+    db.all('SELECT * FROM hahmo WHERE user_id = ?', [userId], (error, result) => {
         if (error) {
             console.log(error.message);
-            return res.status(500).json({ error: 'Internal Server Error' });
+            return res.status(400).json({ message: error.message });
+        }
+        return res.status(200).json(result);
+    });
+});
+
+app.get('/api/kayttaja/all', authenticateJWT, (req, res) => {
+    const userId = req.user.id;
+    db.all('SELECT * FROM users WHERE id = ?', [userId], (error, result) => {
+        if (error) {
+            console.log(error.message);
+            return res.status(400).json({ message: error.message });
         }
         return res.status(200).json(result);
     });
@@ -45,7 +83,6 @@ app.get('/api/omatvarusteet/all', (req, res) => {
             console.log(error.message);
             return res.status(400).json({ message: error.message });
         }
-
         return res.status(200).json(result);
     });
 });
@@ -56,7 +93,6 @@ app.get('/api/kaupanvarusteet/all', (req, res) => {
             console.log(error.message);
             return res.status(400).json({ message: error.message });
         }
-
         return res.status(200).json(result);
     });
 });
@@ -69,12 +105,9 @@ app.get('/api/hahmo/one/:id', (req, res) => {
             console.log(error.message);
             return res.status(400).json({ message: error.message });
         }
-
-        // Jos haku ei tuottanut yhtään riviä
         if (typeof (result) == 'undefined') {
             return res.status(404).json({ message: 'Haettua hahmoa ei ole' });
         }
-
         return res.status(200).json(result);
     });
 });
@@ -85,7 +118,6 @@ app.get('/api/hahmo/kuvat', (req, res) => {
             console.log(error.message);
             return res.status(400).json({ message: error.message });
         }
-
         return res.status(200).json(result);
     });
 });
@@ -93,7 +125,6 @@ app.get('/api/hahmo/kuvat', (req, res) => {
 app.delete('/api/hahmo/delete/:id', (req, res) => {
     let id = req.params.id;
 
-    // Huomaa, että ei nuolinotaatiofunktioina kuten muissa kohdissa
     db.run('delete from hahmo where id = ?', [id], function (error) {
         if (error) {
             console.log(error.message);
@@ -137,19 +168,21 @@ app.post('/api/hahmo/add', (req, res) => {
     );
 });
 */
-app.post('/api/hahmo/add', upload.single('kuva'), (req, res) => {
-    let hahmo = req.body;
+app.post('/api/hahmo/add', authenticateJWT, upload.single('kuva'), (req, res) => {
+    const hahmo = req.body;
+    const userId = req.user.id;
 
-    db.run('insert into hahmo (nimi,ammatti,ika,kokemuspisteet,ase,kuva) values (?, ?, ?, ?, ?, ?)',
-        [hahmo.nimi, hahmo.ammatti, hahmo.ika, hahmo.kokemuspisteet, hahmo.ase, hahmo.kuva], (error) => {
-
+    db.run(
+        'INSERT INTO hahmo (nimi, ammatti, ika, kokemuspisteet, ase, kuva, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [hahmo.nimi, hahmo.ammatti, hahmo.ika, hahmo.kokemuspisteet, hahmo.ase, hahmo.kuva, userId],
+        (error) => {
             if (error) {
                 console.log(error.message);
                 return res.status(400).json({ message: error.message });
             }
-
             return res.status(200).json({ count: 1 });
-        });
+        }
+    );
 });
 
 app.get('/api/lataa/:nimi', (req, res) => {
@@ -157,8 +190,41 @@ app.get('/api/lataa/:nimi', (req, res) => {
     res.download(file);
 });
 
+app.get('*', (req, res) => {
+    return res.status(404).json({ message: 'Ei pyydettyä palvelua' });
+});
+
 // Käsittely virheille
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Internal Server Error');
+});
+
+// Rekisteröinti
+app.post('/api/register', (req, res) => {
+    const { username, password } = req.body;
+    const hashedPassword = bcrypt.hashSync(password, saltRounds);
+    db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword], function(err) {
+        if (err) {
+            return res.status(400).json({ error: 'Username already exists' });
+        }
+        res.status(201).json({ message: 'User created' });
+    });
+});
+
+// Kirjautuminen
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+    db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
+        if (err || !user) {
+            return res.status(401).json({ error: 'Invalid username or password' });
+        }
+        const isPasswordValid = bcrypt.compareSync(password, user.password);
+        console.log(`Is password valid: ${isPasswordValid}`);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid password' });
+        }
+        const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: '1h' });
+        res.json({ token });
+    });
 });
