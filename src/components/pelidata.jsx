@@ -4,10 +4,13 @@ let palvelinHahmot = 'https://pelivalikkoreactnode.onrender.com/api/hahmo/';
 let palvelinKayttaja = 'https://pelivalikkoreactnode.onrender.com/api/kayttaja/';
 let palvelinVarusteetOmat = 'https://pelivalikkoreactnode.onrender.com/api/omatvarusteet/';
 let palvelinVarusteetKaupan = 'https://pelivalikkoreactnode.onrender.com/api/kaupanvarusteet/';
-//let palvelinHahmot = 'http://localhost:8080/hahmo/';
-//let palvelinKayttaja = 'http://localhost:8080/kayttaja/';
-//let palvelinVarusteetOmat = 'http://localhost:8080/omatvarusteet/';
-//let palvelinVarusteetKaupan = 'http://localhost:8080/kaupanvarusteet/';
+
+/*
+let palvelinHahmot = 'http://localhost:8080/hahmo/';
+let palvelinKayttaja = 'http://localhost:8080/kayttaja/';
+let palvelinVarusteetOmat = 'http://localhost:8080/omatvarusteet/';
+let palvelinVarusteetKaupan = 'http://localhost:8080/kaupanvarusteet/';
+*/
 
 export const getHahmot = async () => {
   try {

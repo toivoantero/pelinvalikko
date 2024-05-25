@@ -7,7 +7,7 @@ const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true); // State to toggle between login and register
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,13 +23,13 @@ const LoginPage = () => {
         localStorage.setItem('token', response.data.token);
         navigate('/app');
       } catch (err) {
-        setError('Invalid username or password');
+        setError(['Väärä nimi tai salasana.']);
       }
     } else {
       // Register
       try {
         const response = await axios.post('/api/register', { username, password });
-        alert('Registration successful, please login.');
+        alert('Rekisteröytyminen onnistui, nyt voit kirjautua.');
         setIsLogin(true);
       } catch (err) {
         setError(['Rekisteröityminen epäonnistui.', 'Käyttäjänimi voi olla jo olemassa.']);
@@ -74,7 +74,7 @@ const LoginPage = () => {
         <Button fullWidth variant='outlined' color="primary" onClick={() => setIsLogin(!isLogin)}>
           {isLogin ? 'Tarvitsetko rekisteröitymistä?' : 'Käyttäjätili jo tehtynä?'}
         </Button>
-        {error
+        {error.length > 0
           ? (<p style={{ color: 'white', height: '20px' }}>
             {error.map((line, index) => (
               <span key={index}>
