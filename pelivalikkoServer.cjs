@@ -203,6 +203,9 @@ app.use((err, req, res, next) => {
 // Rekisteröinti
 app.post('/api/register', (req, res) => {
     const { username, password } = req.body;
+    if (username.length < 4 || password.length < 4) {
+        return res.status(400).json({ error: 'Username and password must be at least 4 characters long' });
+    }
     const hashedPassword = bcrypt.hashSync(password, saltRounds);
     db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword], function(err) {
         if (err) {

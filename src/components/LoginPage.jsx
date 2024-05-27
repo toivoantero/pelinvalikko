@@ -16,6 +16,11 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError([]);
+    if (username.length < 4 || password.length < 4) {
+      setError(['Nimen ja salasanan on oltava vähintään neljä merkkiä pitkä.']);
+      return;
+    }
     if (isLogin) {
       // Login
       try {
