@@ -55,7 +55,7 @@ function Kauppa() {
             setOmatMuutos([ostettava, ...omatMuutos]);
             setRahat(rahat - ostettava.hinta);
             console.log(ostettava.nimi + " ostettu.");
-            alert('Tämä toiminto ei toimi vielä niin kuin pitäisi. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Värvääminen, (2) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (3) Värvättyjen seikkailijoiden tietojen muuttaminen, (4) Kauppa, (5) ”Pelivalinnat”-valikko.');
+            alert('Tämä toiminto ei ole vielä toimintakunnossa. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Sisäänkirjautuminen, (2) Värvääminen, (3) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (4) Värvättyjen seikkailijoiden tietojen muuttaminen, (5) Kauppa.');
         }
     }
 
