@@ -1,20 +1,20 @@
 import { Grid, Box, FormControl, InputLabel, IconButton, Select, MenuItem, Card, CardHeader, CardMedia, CardContent, CardActions, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getHahmot, getVarusteetOmat, deleteHahmo } from './pelidata';
+import { getSeikkailijat, getVarusteet, deleteSeikkailija } from './pelidata';
 import { useLoaderData, Form, Link, redirect } from 'react-router-dom';
 
 export async function VarustusLoader() {
-    let hahmotResponse = await getHahmot();
-    if (hahmotResponse.status === 400) {
-        throw Error(hahmotResponse.message);
+    let seikkailijatResponse = await getSeikkailijat();
+    if (seikkailijatResponse.status === 400) {
+        throw Error(seikkailijatResponse.message);
     }
-    return { hahmotResponse };
+    return { seikkailijatResponse };
 }
 
 function Varustus() {
-    const { hahmotResponse } = useLoaderData();
-    const hahmot = hahmotResponse.data;
+    const { seikkailijatResponse } = useLoaderData();
+    const seikkailijat = seikkailijatResponse.data;
 
     return (
         <Grid
@@ -23,7 +23,7 @@ function Varustus() {
             justifyContent="center"
             sx={{ padding: 4 }}
         >
-            {hahmot.map(objekti => {
+            {seikkailijat.map(objekti => {
                 let kuva = encodeURIComponent(objekti.kuva);
                 return (
                     <Grid item key={objekti.id}

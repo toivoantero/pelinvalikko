@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { FormControl, Stack, CardMedia, Typography, Select, Box, TextField, Button, InputLabel, MenuItem } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, FormControl, Stack, CardMedia, Typography, Select, Box, TextField, Button, InputLabel, MenuItem } from '@mui/material';
 import { useParams } from 'react-router';
-import { getVarusteetOmat, deleteHahmo } from './pelidata';
+import { getVarusteet, deleteSeikkailija, updateSeikkailija } from './pelidata';
 import { useLoaderData, Form, redirect } from 'react-router-dom';
 
 export async function PoistoAction({ request }) {
     const formData = await request.formData();
     let id = formData.get("id");
-    const response = await deleteHahmo(id);
+    const response = await deleteSeikkailija(id);
 
     if (response.status === 400 || response.status === 404) {
         throw Error(response.message);
@@ -16,7 +16,7 @@ export async function PoistoAction({ request }) {
 }
 
 export async function YksiloLoader() {
-    let varusteetResponse = await getVarusteetOmat();
+    let varusteetResponse = await getVarusteet();
     if (varusteetResponse.status === 400) {
         throw Error(varusteetResponse.message);
     }
@@ -26,13 +26,15 @@ export async function YksiloLoader() {
 function Identiteetti() {
     const { varusteetResponse } = useLoaderData();
     const varusteet = varusteetResponse.data;
-    let strategiAseet = varusteet.filter(ase => ase.tyyppi == "Yhden käden" && ase.paino < 5);
-    let tiedustelijaAseet = varusteet.filter(ase => ase.paino < 10);
-    let ritariAseet = varusteet.filter(ase => ase.paino > 8);
+    const [viesti, setViesti] = useState('');
+    const [dialogivalinta, setDialogivalinta] = useState('');
+    let strategiAseet = varusteet.filter(ase => ase.tyyppi == "Yhden käden" && ase.paino < 5 && ase.omistaja === 'pelaaja');
+    let tiedustelijaAseet = varusteet.filter(ase => ase.paino < 10 && ase.omistaja === 'pelaaja');
+    let ritariAseet = varusteet.filter(ase => ase.paino > 8 && ase.omistaja === 'pelaaja');
 
     let { id, nimi, ammatti, ika, kokemuspisteet, ase, kuva } = useParams();
 
-    const [hahmo, setHahmo] = useState({
+    const [seikkailija, setSeikkailija] = useState({
         id: id,
         nimi: nimi,
         ammatti: ammatti,
@@ -43,15 +45,83 @@ function Identiteetti() {
     });
 
     const muutaTieto = (e) => {
-        setHahmo({
-            ...hahmo,
+        setSeikkailija({
+            ...seikkailija,
             [e.target.name]: e.target.value
         });
     };
+    /*
+    const muutaTieto = async (e) => {
+        const { name, value } = e.target;
 
-    const ilmoitus = () => {
-        alert('Tämä toiminto ei ole vielä toimintakunnossa. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Sisäänkirjautuminen, (2) Värvääminen, (3) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (4) Värvättyjen seikkailijoiden tietojen muuttaminen, (5) Kauppa.');
-    }
+        // Päivitetään seikkailijan tiedot tilassa
+        setSeikkailija((prevSeikkailija) => ({
+            ...prevSeikkailija,
+            [name]: value,
+            ...(name === 'ammatti' && { ase: null }) // Jos ammatti muuttuu, asetetaan ase nulliksi
+        }));
+
+        // Jos ammatti muuttuu, päivitetään tietokanta
+        if (name === 'ammatti') {
+            try {
+                const response = await updateSeikkailija(seikkailija.id, { ...seikkailija, ammatti: value, ase: null });
+                if (response.status === 200) {
+                    console.log('Ammatti päivitetty ja ase nollattu tietokantaan');
+                } else {
+                    console.error('Tietokannan päivitys epäonnistui:', response.message);
+                }
+            } catch (error) {
+                console.error('Virhe päivitettäessä tietokantaa:', error);
+            }
+        }
+    };
+    */
+    const paivitaSeikkailija = async () => {
+        const response = await updateSeikkailija(seikkailija.id, seikkailija);
+        if (response.status === 200) {
+            setViesti('Seikkailijan tiedot ovat nyt muutetut');
+            setDialogivalinta(
+                <DialogActions>
+                    <Button onClick={handleClose} autoFocus>Sulje</Button>
+                </DialogActions>
+            );
+            handleClickOpen();
+        } else {
+            alert('Päivitys epäonnistui: ' + response.message);
+        }
+    };
+
+    const poistaSeikkailija = async () => {
+        setViesti('Irtisanotaanko seikkailija?');
+        setDialogivalinta(
+            <DialogActions>
+                <Form style={{ width: '100%' }} action='/app/poisto' method='post'>
+                    <input type='hidden' name='id' value={seikkailija.id} />
+                    <Button style={{ margin: '0 30px' }} type='submit' color="tertiary" variant='outlined'>Irtisano</Button>
+                    <Button
+                        style={{ float: 'right', margin: '0 30px' }}
+                        type='reset'
+                        onClick={handleClose}
+                        color="tertiary"
+                        variant='outlined'
+                        autoFocus>
+                        Peru
+                    </Button>
+                </Form>
+            </DialogActions>
+        );
+        handleClickOpen();
+    };
+
+    const [open, setOpen] = useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     return (
         <Stack
@@ -63,16 +133,16 @@ function Identiteetti() {
             width="80vw"
             justifyContent="center">
             <Box sx={{ background: "rgba(40,60,85,0)", textAlign: 'center', paddingTop: 2 }}>
-                {hahmo.kuva ?
+                {seikkailija.kuva ?
                     <CardMedia sx={{ height: 'auto', width: 200 }}
                         component='img'
-                        image={'/api/lataa/' + hahmo.kuva}
-                        //image={'http://localhost:8080/lataa/' + hahmo.kuva}
-                        alt={hahmo.nimi} />
+                        image={'/api/lataa/' + seikkailija.kuva}
+                        //image={'http://localhost:8080/lataa/' + seikkailija.kuva}
+                        alt={seikkailija.nimi} />
                     :
                     <Typography sx={{ height: 100, width: 200 }}>Ei kuvaa</Typography>}
-                <Typography>Taso: {Math.floor(hahmo.kokemuspisteet)}</Typography>
-                <Typography>Ikä: {hahmo.ika}</Typography>
+                <Typography>Taso: {Math.floor(seikkailija.kokemuspisteet)}</Typography>
+                <Typography>Ikä: {seikkailija.ika}</Typography>
             </Box>
             <Stack>
                 <Box
@@ -83,7 +153,13 @@ function Identiteetti() {
                     width="40vw"
                     justifyContent="center">
 
-                    <TextField fullWidth name='nimi' label='Nimi' defaultValue={hahmo.nimi} placeholder={hahmo.nimi} />
+                    <TextField
+                        fullWidth
+                        name='nimi'
+                        label='Nimi'
+                        value={seikkailija.nimi}
+                        onChange={muutaTieto}
+                    />
 
                     <FormControl fullWidth>
                         <InputLabel id="ammatti-label">Ammatti</InputLabel>
@@ -92,7 +168,7 @@ function Identiteetti() {
                             id='ammatti'
                             label="Ammatti"
                             name='ammatti'
-                            value={hahmo.ammatti}
+                            value={seikkailija.ammatti}
                             onChange={muutaTieto}
                             MenuProps={{
                                 PaperProps: {
@@ -113,7 +189,7 @@ function Identiteetti() {
                             id='ase'
                             label="Ase"
                             name='ase'
-                            defaultValue={hahmo.ase}
+                            value={seikkailija.ase || ''}
                             onChange={muutaTieto}
                             MenuProps={{
                                 PaperProps: {
@@ -121,30 +197,43 @@ function Identiteetti() {
                                 }
                             }}
                         >
-                            {hahmo.ammatti === "Strategi" && strategiAseet.map((ase, index) => (
+                            {seikkailija.ammatti === "Strategi" && strategiAseet.map((ase, index) => (
                                 <MenuItem key={index} value={ase.nimi}>
                                     {ase.nimi}
                                 </MenuItem>
                             ))}
-                            {hahmo.ammatti === "Tiedustelija" && tiedustelijaAseet.map((ase, index) => (
+                            {seikkailija.ammatti === "Tiedustelija" && tiedustelijaAseet.map((ase, index) => (
                                 <MenuItem key={index} value={ase.nimi}>
                                     {ase.nimi}
                                 </MenuItem>
                             ))}
-                            {hahmo.ammatti === "Ritari" && ritariAseet.map((ase, index) => (
+                            {seikkailija.ammatti === "Ritari" && ritariAseet.map((ase, index) => (
                                 <MenuItem key={index} value={ase.nimi}>
                                     {ase.nimi}
                                 </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
-
-                    <Button color="secondary" variant='outlined' onClick={ilmoitus}>Vahvista muutos</Button>
+                    <Button color="secondary" variant='outlined' onClick={paivitaSeikkailija}>Vahvista muutos</Button>
                 </Box>
-                <Form action='/app/poisto' method='post'>
-                    <input type='hidden' name='id' value={hahmo.id} />
-                    <Button type='submit' sx={{ marginTop: 4 }} color="primary" variant='outlined'>Irtisano seikkailija pois ryhmästä</Button>
-                </Form>
+
+                <Box>
+                    <Button sx={{ marginTop: 4 }} color="primary" variant='outlined' onClick={poistaSeikkailija}>Irtisano seikkailija pois ryhmästä</Button>
+                </Box>
+
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            {viesti}
+                        </DialogContentText>
+                    </DialogContent>
+                    {dialogivalinta}
+                </Dialog>
             </Stack>
         </Stack>
     );

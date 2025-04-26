@@ -2,20 +2,20 @@ import { useState, useEffect } from 'react';
 import { IconButton, Menu, MenuItem, ListItemText, Box, AppBar, Tabs, Tab, Typography, Button, } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { getKayttaja } from './pelidata';
+import { getPelaaja } from './pelidata';
 
 function Valilehdet() {
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
-  const [kayttaja, setKayttaja] = useState([]);
+  const [pelaaja, setPelaaja] = useState([]);
 
   const fetchData = async () => {
     try {
-      const [kayttajaResponse] = await Promise.all([getKayttaja()]);
-      if (kayttajaResponse.status === 400) {
-        throw new Error(kayttajaResponse.message);
+      const [pelaajaResponse] = await Promise.all([getPelaaja()]);
+      if (pelaajaResponse.status === 400) {
+        throw new Error(pelaajaResponse.message);
       }
-      setKayttaja(kayttajaResponse.data);
+      setPelaaja(pelaajaResponse.data);
     } catch (error) {
       console.error("Virhe haettaessa käyttäjiä:", error);
     }
@@ -57,12 +57,6 @@ function Valilehdet() {
           onClose={menuKiinni}
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          <MenuItem onClick={menuKiinni}>
-            <ListItemText primary='Uusi peli' onClick={uusiPeli} />
-          </MenuItem>
-          <MenuItem onClick={menuKiinni}>
-            <ListItemText primary='Lataa peli' onClick={uusiPeli} />
-          </MenuItem>
           <MenuItem onClick={menuKiinni}>
             <ListItemText primary='Lopeta peli' onClick={uusiPeli} />
           </MenuItem>

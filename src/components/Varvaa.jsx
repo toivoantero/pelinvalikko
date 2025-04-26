@@ -2,60 +2,60 @@ import { useState, useEffect } from 'react';
 import { FormControl, Stack, CardMedia, Select, Slider, Box, TextField, Button, InputLabel, Typography, MenuItem } from '@mui/material';
 import { PaperOpaque } from '../App';
 import { Form } from 'react-router-dom';
-import { addHahmo, getHahmot, getVarusteetOmat } from './pelidata';
+import { addSeikkailija, getSeikkailijat, getVarusteet } from './pelidata';
 
 function Varvaa() {
-    const [hahmot, setHahmot] = useState([]);
+    const [seikkailijat, setSeikkailijat] = useState([]);
     const [viesti, setViesti] = useState('');
     const [kuvakytkin, setKuvakytkin] = useState(true);
     const [aseet, setAseet] = useState([]);
-    const [lisatty, setLisatty] = useState([{ kuva: 'tyhjahahmo.png' }]);
-    const [hahmo, setHahmo] = useState({
+    const [lisatty, setLisatty] = useState([{ kuva: 'tyhjaseikkailija.png' }]);
+    const [seikkailija, setSeikkailija] = useState({
         nimi: '',
         ammatti: '',
         ika: 30,
         kokemuspisteet: 1.74,
         ase: '',
-        kuva: 'tyhjahahmo.png',
+        kuva: 'tyhjaseikkailija.png',
     });
 
     const fetchData = async () => {
         try {
-            const [aseetResponse, hahmotResponse] = await Promise.all([getVarusteetOmat(), getHahmot()]);
+            const [aseetResponse, seikkailijatResponse] = await Promise.all([getVarusteet(), getSeikkailijat()]);
             if (aseetResponse.status === 400) {
                 throw new Error(aseetResponse.message);
             }
-            if (hahmotResponse.status === 400) {
-                throw new Error(hahmotResponse.message);
+            if (seikkailijatResponse.status === 400) {
+                throw new Error(seikkailijatResponse.message);
             }
-            setAseet(aseetResponse.data);
-            setHahmot(hahmotResponse.data);
+            setAseet(aseetResponse.data.filter(ase => ase.omistaja === 'pelaaja'));
+            setSeikkailijat(seikkailijatResponse.data);
         } catch (error) {
-            console.error("Virhe haettaessa aseita tai hahmoja:", error);
+            console.error("Virhe haettaessa aseita tai seikkailijaa:", error);
         }
     }
 
-    const lisaaHahmo = async () => {
-        if (hahmot.length < 6) {
-            if (hahmo.ammatti.trim() !== '') {
+    const lisaaSeikkailija = async () => {
+        if (seikkailijat.length < 6) {
+            if (seikkailija.ammatti.trim() !== '') {
                 try {
-                    const response = await addHahmo(hahmo);
+                    const response = await addSeikkailija(seikkailija);
                     if (response.status === 200) {
                         setKuvakytkin(true);
                         setViesti(
                             <Box>
                                 <Typography sx={{ color: "#FFCC33" }}>Tervetuloa ryhmään! </Typography>
                                 <Box sx={{ color: 'white' }}>
-                                    <Typography>Nimi: {hahmo.nimi}</Typography>
-                                    <Typography>Ammatti: {hahmo.ammatti}</Typography>
-                                    <Typography>Ikä: {hahmo.ika}</Typography>
-                                    <Typography>Taso: {Math.floor(hahmo.kokemuspisteet)}</Typography>
+                                    <Typography>Nimi: {seikkailija.nimi}</Typography>
+                                    <Typography>Ammatti: {seikkailija.ammatti}</Typography>
+                                    <Typography>Ikä: {seikkailija.ika}</Typography>
+                                    <Typography>Taso: {Math.floor(seikkailija.kokemuspisteet)}</Typography>
                                 </Box>
                             </Box>
                         );
-                        setHahmot([...hahmot, hahmo]);
-                        setHahmo({
-                            ...hahmo,
+                        setSeikkailijat([...seikkailijat, seikkailija]);
+                        setSeikkailija({
+                            ...seikkailija,
                             nimi: '',
                             ammatti: '',
                             ika: 30,
@@ -84,7 +84,7 @@ function Varvaa() {
     }
 
     const valintaIkaAmmatti = (e) => {
-        setHahmo({ ...hahmo, [e.target.name]: e.target.value });
+        setSeikkailija({ ...seikkailija, [e.target.name]: e.target.value });
         setViesti('');
     }
 
@@ -93,11 +93,11 @@ function Varvaa() {
         const valintaAse = () => {
             if (aseet.length > 0) {
                 let aseetAmmatinMukaan;
-                if (hahmo.ammatti === "Tiedustelija") {
+                if (seikkailija.ammatti === "Tiedustelija") {
                     aseetAmmatinMukaan = aseet.filter(ase => ase.paino < 10);
-                } else if (hahmo.ammatti === "Ritari") {
+                } else if (seikkailija.ammatti === "Ritari") {
                     aseetAmmatinMukaan = aseet.filter(ase => ase.paino > 8);
-                } else if (hahmo.ammatti === "Strategi") {
+                } else if (seikkailija.ammatti === "Strategi") {
                     aseetAmmatinMukaan = aseet.filter(ase => ase.tyyppi === "Yhden käden" && ase.paino < 5);
                 }
                 if (aseetAmmatinMukaan && aseetAmmatinMukaan.length > 0) {
@@ -122,14 +122,14 @@ function Varvaa() {
                         Math.random() < 0.66 ? nimet.mies :
                             nimet.nainen;
                 satunnainenNimi = satunnainenNimilista[Math.floor(Math.random() * satunnainenNimilista.length)];
-            } while (satunnainenNimi === lisatty[lisatty.length - 1].nimi); // Jotta ei seuraavalla hahmolle tulisi samaa nimeä, kuin edelliselle.
+            } while (satunnainenNimi === lisatty[lisatty.length - 1].nimi); // Jotta ei seuraavalla seikkailijalle tulisi samaa nimeä, kuin edelliselle.
             return { nimi: satunnainenNimi, nimilista: satunnainenNimilista, nimiobjekti: nimet };
         }
 
         const valintaKuva = (satunnainenNimilista, nimet) => {
             let kuvaNimenJaAmmatinMukaan = null;
             const arvottuLuku = Math.floor(Math.random() * 2);
-            if (hahmo.ammatti === "Strategi") {
+            if (seikkailija.ammatti === "Strategi") {
                 if (satunnainenNimilista === nimet.neutraali) {
                     kuvaNimenJaAmmatinMukaan = arvottuLuku === 0 ? 'strategi_m.png' : 'strategi_n.png';
                 } else if (satunnainenNimilista === nimet.mies) {
@@ -139,7 +139,7 @@ function Varvaa() {
                 } else {
                     console.log("Jotain meni pieleen.");
                 }
-            } else if (hahmo.ammatti === "Ritari") {
+            } else if (seikkailija.ammatti === "Ritari") {
                 if (satunnainenNimilista === nimet.neutraali) {
                     kuvaNimenJaAmmatinMukaan = 'ritari.png';
                 } else if (satunnainenNimilista === nimet.mies) {
@@ -149,7 +149,7 @@ function Varvaa() {
                 } else {
                     console.log("Jotain meni pieleen.");
                 }
-            } else if (hahmo.ammatti === "Tiedustelija") {
+            } else if (seikkailija.ammatti === "Tiedustelija") {
                 if (satunnainenNimilista === nimet.neutraali) {
                     kuvaNimenJaAmmatinMukaan = arvottuLuku === 0 ? 'tiedustelija_m.png' : 'tiedustelija_n.png';
                 } else if (satunnainenNimilista === nimet.mies) {
@@ -167,23 +167,23 @@ function Varvaa() {
         const kuva = valintaKuva(nimilista, nimiobjekti);
         const ase = valintaAse();
 
-        setHahmo({ ...hahmo, nimi: nimi, ase: ase, kuva: kuva });
+        setSeikkailija({ ...seikkailija, nimi: nimi, ase: ase, kuva: kuva });
     }
 
     useEffect(() => { fetchData(), setKuvakytkin(true) }, []);
-    useEffect(() => { fetchData() }, [hahmo]);
+    useEffect(() => { fetchData() }, [seikkailija]);
     useEffect(() => {
         taydennaSeikkailija();
         setKuvakytkin(true);
-    }, [hahmo.ammatti]);
+    }, [seikkailija.ammatti]);
 
     const lisattyVarastoon = () => {
-        setLisatty([{ nimi: hahmo.nimi, kuva: hahmo.kuva }]);
+        setLisatty([{ nimi: seikkailija.nimi, kuva: seikkailija.kuva }]);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        lisaaHahmo();
+        lisaaSeikkailija();
     };
 
     return (
@@ -205,7 +205,7 @@ function Varvaa() {
                             id='ammatti'
                             label="Ammatti"
                             name='ammatti'
-                            value={hahmo.ammatti}
+                            value={seikkailija.ammatti}
                             onChange={valintaIkaAmmatti}
                         >
                             <MenuItem value="Ritari">Ritari</MenuItem>
@@ -220,7 +220,7 @@ function Varvaa() {
                         name='ika'
                         min={15}
                         max={100}
-                        value={hahmo.ika}
+                        value={seikkailija.ika}
                         onChange={valintaIkaAmmatti}>
                     </Slider>
 
@@ -232,19 +232,19 @@ function Varvaa() {
                 <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', minWidth: 400 }}>
                     {kuvakytkin == true ?
                         <Box>
-                            {hahmo.kuva ?
+                            {seikkailija.kuva ?
                                 <CardMedia sx={{ height: 'auto', width: 200 }}
                                     component='img'
-                                    image={'/api/lataa/' + hahmo.kuva}
-                                    //image={'http://localhost:8080/lataa/' + hahmo.kuva}
-                                    alt={hahmo.nimi}
+                                    image={'/api/lataa/' + seikkailija.kuva}
+                                    //image={'http://localhost:8080/lataa/' + seikkailija.kuva}
+                                    alt={seikkailija.nimi}
                                 />
                                 :
                                 <CardMedia sx={{ height: 'auto', width: 200 }}
                                     component='img'
                                     image={'/api/lataa/' + lisatty[lisatty.length - 1].kuva}
                                     //image={'http://localhost:8080/lataa/' + lisatty[lisatty.length - 1].kuva}
-                                    alt={hahmo.nimi}
+                                    alt={seikkailija.nimi}
                                 />
                             }
                         </Box>
@@ -262,3 +262,4 @@ function Varvaa() {
 }
 
 export default Varvaa;
+

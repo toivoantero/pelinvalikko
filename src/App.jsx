@@ -13,7 +13,7 @@ import { Paper } from '@mui/material';
 import { styled } from '@mui/system';
 import './hahmovalikko.css';
 
-export const HahmoContext = createContext();
+export const SeikkailijaContext = createContext();
 
 const teema = createTheme({
   palette: {

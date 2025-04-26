@@ -1,107 +1,108 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Stack, Paper, Box, Button, Typography } from '@mui/material';
-import { getVarusteetOmat, getVarusteetKaupan } from './pelidata';
+import { getVarusteet, updateVarusteet } from './pelidata';
 
 function Kauppa() {
-
-    const [varusteetOmat, setVarusteetOmat] = useState([]);
-    const [varusteetKauppa, setVarusteetKauppa] = useState([]);
-    const [myytava, setMyytava] = useState(null);
-    const [ostettava, setOstettava] = useState(null);
-    const [omatMuutos, setOmatMuutos] = useState([]);
-    const [kaupanMuutos, setKaupanMuutos] = useState([]);
+    const [varusteet, setVarusteet] = useState([]);
+    const [valittuVaruste, setValittuVaruste] = useState(null);
     const [rahat, setRahat] = useState(1000);
 
     const fetchData = async () => {
         try {
-            const [omatResponse, kaupanResponse] = await Promise.all([getVarusteetOmat(), getVarusteetKaupan()]);
-            if (omatResponse.status === 400) {
-                throw new Error(omatResponse.message);
-            }
-            if (kaupanResponse.status === 400) {
-                throw new Error(kaupanResponse.message);
-            }
-            setVarusteetOmat(omatResponse.data);
-            setVarusteetKauppa(kaupanResponse.data);
+            const response = await getVarusteet();
+            const kaikkiVarusteet = response.data;
+            setVarusteet(kaikkiVarusteet);
         } catch (error) {
-            console.error("Virhe haettaessa aseita tai hahmoja:", error);
+            console.error("Virhe haettaessa varusteita:", error);
         }
-    }
+    };
 
-    const valitseMyytava = (e) => {
-        e.target.style.background = "gold";
-        setMyytava(omatMuutos.find(varuste => varuste.id == e.target.id));
-        setOstettava(null);
-    }
-    const valitseOstettava = (e) => {
-        e.target.style.background = "gold";
-        setOstettava(kaupanMuutos.find(varuste => varuste.id == e.target.id));
-        setMyytava(null);
-    }
-
-    const myy = () => {
-        if (myytava != null) {
-            setOmatMuutos(omatMuutos.filter(varuste => varuste.id != myytava.id));
-            setKaupanMuutos([myytava, ...kaupanMuutos]);
-            setRahat(rahat + myytava.hinta);
-            console.log(myytava.nimi + " myyty.");
-            alert('Tämä toiminto ei ole vielä toimintakunnossa. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Sisäänkirjautuminen, (2) Värvääminen, (3) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (4) Värvättyjen seikkailijoiden tietojen muuttaminen, (5) Kauppa.');
-        }
-    }
-    const osta = () => {
-        if (ostettava != null) {
-            setKaupanMuutos(kaupanMuutos.filter(varuste => varuste.id != ostettava.id));
-            setOmatMuutos([ostettava, ...omatMuutos]);
-            setRahat(rahat - ostettava.hinta);
-            console.log(ostettava.nimi + " ostettu.");
-            alert('Tämä toiminto ei ole vielä toimintakunnossa. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Sisäänkirjautuminen, (2) Värvääminen, (3) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (4) Värvättyjen seikkailijoiden tietojen muuttaminen, (5) Kauppa.');
-        }
-    }
-
-    const omat = omatMuutos.map(objekti => {
-        return (
-            <Typography component="form" key={objekti.nimi} id={objekti.id}
-                onClick={valitseMyytava} variant='body2'
-                sx={{
-                    '&:hover': { backgroundColor: 'lightgray' },
-                    padding: "5px 20px",
-                    border: "1px solid black"
-                }}>
-                {objekti.nimi} <br />
-                Vahinko: {objekti.vahinko} <br />
-                Paino: {objekti.paino} <br />
-                Tyyppi: {objekti.tyyppi} <br />
-                Hinta: {objekti.hinta} <br />
-            </Typography>
-        );
-    })
-
-    const kaupan = kaupanMuutos.map(objekti => {
-        return (
-            <Typography component="form" key={objekti.nimi} id={objekti.id}
-                onClick={valitseOstettava} variant='body2'
-                sx={{
-                    '&:hover': { backgroundColor: 'lightgray' },
-                    padding: "5px 20px",
-                    border: "1px solid black"
-                }}>
-                {objekti.nimi} <br />
-                Vahinko: {objekti.vahinko} <br />
-                Paino: {objekti.paino} <br />
-                Tyyppi: {objekti.tyyppi} <br />
-                Hinta: {objekti.hinta} <br />
-            </Typography>
-        );
-    })
-
-    useEffect(() => { fetchData() }, []);
     useEffect(() => {
-        setOmatMuutos(varusteetOmat);
-    }, [varusteetOmat]);
-    useEffect(() => {
-        setKaupanMuutos(varusteetKauppa);
-    }, [varusteetKauppa]);
+        fetchData();
+    }, []);
+
+    const paivitaVarusteet = async () => {
+        try {
+            if (valittuVaruste) {
+                let uusiVaruste;
+                if (valittuVaruste.omistaja === 'pelaaja') {
+                    uusiVaruste = { ...valittuVaruste, omistaja: 'kauppa' };
+                } else if (valittuVaruste.omistaja === 'kauppa') {
+                    uusiVaruste = { ...valittuVaruste, omistaja: 'pelaaja' };
+                }
+                setVarusteet(prevVarusteet =>
+                    prevVarusteet.map(v => v.id === uusiVaruste.id ? uusiVaruste : v)
+                );
+                const response = await updateVarusteet(uusiVaruste.id, uusiVaruste);
+                if (response.status === 200) {
+                    console.log('Päivitys onnistui:', response.data);
+                    fetchData();
+                } else {
+                    alert('Päivitys epäonnistui: ' + response.message);
+                }
+            } else {
+                alert('Valitse ensin varuste päivitettäväksi.');
+            }
+        } catch (error) {
+            console.error('Virhe päivitettäessä varusteita:', error);
+            alert('Virhe päivitettäessä varusteita. Tarkista verkkoyhteys.');
+        }
+    };
+
+    const valitseVaruste = (varuste) => {
+        if (varuste.omistaja === 'pelaaja' || varuste.omistaja === 'kauppa') {
+            setValittuVaruste(prev =>
+                (prev?.id === varuste.id) ? null : varuste
+            );
+        }
+    };
+
+    const vaihto = () => {
+        const hinta = Number(valittuVaruste.hinta);
+        paivitaVarusteet();
+        if (valittuVaruste.omistaja === 'kauppa') {
+            setRahat(prevRahat => Number(prevRahat) - hinta);
+        } else if (valittuVaruste.omistaja === 'pelaaja') {
+            setRahat(prevRahat => Number(prevRahat) + hinta);
+        }
+        setValittuVaruste(null);
+    };
+
+    const VarusteLista = ({ otsikko, varusteet }) => (
+        <Box>
+            <Typography variant="body1">{otsikko}</Typography>
+            <Paper sx={{
+                height: "80vh",
+                overflowY: "scroll",
+                background: "#6b7a8a",
+                color: "black"
+            }}>
+                {varusteet.map(varuste => (
+                    <Typography
+                        key={varuste.id}
+                        onClick={() => valitseVaruste(varuste)}
+                        variant='body2'
+                        sx={{
+                            backgroundColor:
+                                (varuste.omistaja === 'pelaaja' && valittuVaruste?.id === varuste.id) ||
+                                    (varuste.omistaja === 'kauppa' && valittuVaruste?.id === varuste.id)
+                                    ? 'gold'
+                                    : 'transparent',
+                            '&:hover': { backgroundColor: 'lightgray' },
+                            padding: "5px 20px",
+                            border: "1px solid black"
+                        }}
+                    >
+                        {varuste.nimi} <br />
+                        Vahinko: {varuste.vahinko} <br />
+                        Paino: {varuste.paino} <br />
+                        Tyyppi: {varuste.tyyppi} <br />
+                        Hinta: {varuste.hinta} <br />
+                    </Typography>
+                ))}
+            </Paper>
+        </Box>
+    );
 
     return (
         <Stack
@@ -110,19 +111,12 @@ function Kauppa() {
             marginTop={2}
             marginX="auto"
             width="80vw"
-            justifyContent="center">
-            <Box>
-                <Typography variant="body1">Omat tavarat</Typography>
-                <Paper sx={{
-                    height: "80vh",
-                    overflowY: "scroll",
-                    background: "#6b7a8a",
-                    color: "black"
-                }}>
-                    {omat}
-                </Paper>
-            </Box>
-
+            justifyContent="center"
+        >
+            <VarusteLista
+                otsikko="Omat tavarat"
+                varusteet={varusteet.filter(varuste => varuste.omistaja === 'pelaaja')}
+            />
             <Box
                 width="15vw"
                 sx={{
@@ -133,23 +127,16 @@ function Kauppa() {
                     justifyContent: "center",
                 }}>
                 <Typography padding="0 0 30px 0">{rahat} kultaa</Typography>
-                <Button color='tertiary' variant='outlined' onClick={osta}>Osta</Button>
-                <br />
-                <Button color='tertiary' variant='outlined' onClick={myy}>Myy</Button>
+                <Button variant='outlined' onClick={vaihto}>osta
+                    <br />tai<br />myy
+                </Button>
             </Box>
-
-            <Box>
-                <Typography variant="body1">Kaupan tavarat</Typography>
-                <Paper sx={{
-                    height: "80vh",
-                    overflowY: "scroll",
-                    background: "#6b7a8a",
-                    color: "black"
-                }}>
-                    {kaupan}
-                </Paper>
-            </Box>
+            <VarusteLista
+                otsikko="Kaupan tavarat"
+                varusteet={varusteet.filter(varuste => varuste.omistaja === 'kauppa')}
+            />
         </Stack>
     );
 }
+
 export default Kauppa;

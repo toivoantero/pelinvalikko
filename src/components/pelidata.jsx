@@ -1,50 +1,48 @@
 import axios from 'axios';
 
-let palvelinHahmot = 'https://pelivalikkoreactnode.onrender.com/api/hahmo/';
-let palvelinKayttaja = 'https://pelivalikkoreactnode.onrender.com/api/kayttaja/';
-let palvelinVarusteetOmat = 'https://pelivalikkoreactnode.onrender.com/api/omatvarusteet/';
-let palvelinVarusteetKaupan = 'https://pelivalikkoreactnode.onrender.com/api/kaupanvarusteet/';
+let palvelinSeikkailijat = 'https://pelivalikkoreactnode.onrender.com/api/seikkailija/';
+let palvelinPelaaja = 'https://pelivalikkoreactnode.onrender.com/api/pelaaja/';
+let palvelinVarusteet = 'https://pelivalikkoreactnode.onrender.com/api/varusteet/';
 
 /*
-let palvelinHahmot = 'http://localhost:8080/hahmo/';
-let palvelinKayttaja = 'http://localhost:8080/kayttaja/';
-let palvelinVarusteetOmat = 'http://localhost:8080/omatvarusteet/';
-let palvelinVarusteetKaupan = 'http://localhost:8080/kaupanvarusteet/';
+let palvelinSeikkailijat = 'http://localhost:8080/api/seikkailija/';
+let palvelinPelaaja = '/api/pelaaja/';
+let palvelinVarusteet = '/api/varusteet/';
 */
 
-export const getHahmot = async () => {
+export const getSeikkailijat = async () => {
   try {
     const token = localStorage.getItem('token');
     const config = {
         headers: { Authorization: `Bearer ${token}` }
     };
-    const response = await axios.get(palvelinHahmot + 'all', config);
+    const response = await axios.get(palvelinSeikkailijat + 'all', config);
     return ({ status: response.status, data: response.data });
   } catch (error) {
     return ({ status: error.response.status, message: 'Haku ei onnistunut: ' + error.message });
   }
 }
 
-export const getKayttaja = async () => {
+export const getPelaaja = async () => {
   try {
     const token = localStorage.getItem('token');
     const config = {
         headers: { Authorization: `Bearer ${token}` }
     };
-    const response = await axios.get(palvelinKayttaja + 'all', config);
+    const response = await axios.get(palvelinPelaaja + 'all', config);
     return ({ status: response.status, data: response.data });
   } catch (error) {
     return ({ status: error.response.status, message: 'Haku ei onnistunut: ' + error.message });
   }
 }
 
-export const addHahmo = async (hahmo) => {
+export const addSeikkailija = async (seikkailija) => {
   try {
     const token = localStorage.getItem('token');
     const config = {
         headers: { Authorization: `Bearer ${token}` }
     };
-    const response = await axios.post(palvelinHahmot + 'add', hahmo, config);
+    const response = await axios.post(palvelinSeikkailijat + 'add', seikkailija, config);
     return { status: response.status, data: response.data };
   } catch (error) {
     console.error('Virhe lisäyksessä:', error.response.data || error.response.statusText);
@@ -52,31 +50,44 @@ export const addHahmo = async (hahmo) => {
   }
 }
 
-
-
-export const deleteHahmo = async (id) => {
+export const deleteSeikkailija = async (id) => {
   try {
-    const response = await axios.delete(palvelinHahmot + 'delete/' +  id);
+    const response = await axios.delete(palvelinSeikkailijat + 'delete/' +  id);
     return ({ status: response.status, data: response.data });
   } catch (error) {
     return ({ status: error.response.status, message: 'Poisto ei onnistunut: ' + error.message })
   }
 }
 
-export const getVarusteetOmat = async () => {
+export const updateSeikkailija = async (id, data) => {
   try {
-    const response = await axios.get(palvelinVarusteetOmat + 'all');
-    return ({ status: response.status, data: response.data });
+      const response = await axios.put(palvelinSeikkailijat + 'update/' + id, data);
+      return ({ status: response.status, data: response.data });
   } catch (error) {
-    return ({ status: error.response.status, message: 'Haku ei onnistunut: ' + error.message });
+      return ({ status: error.response.status, message: 'Muokkaus ei onnistunut: ' + error.message })
   }
 }
 
-export const getVarusteetKaupan = async () => {
+export const getVarusteet = async () => {
+    try {
+        const token = localStorage.getItem('token'); // Hae JWT-tunniste localStoragesta
+        const response = await axios.get('/api/varusteet/all', {
+            headers: {
+                'Authorization': `Bearer ${token}` // Lisää JWT-tunniste pyyntöön
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('Virhe haettaessa varusteita:', error);
+        throw error;
+    }
+};
+
+export const updateVarusteet = async (id, data) => {
   try {
-    const response = await axios.get(palvelinVarusteetKaupan + 'all');
-    return ({ status: response.status, data: response.data });
+      const response = await axios.put(palvelinVarusteet + 'update/' + id, data);
+      return ({ status: response.status, data: response.data });
   } catch (error) {
-    return ({ status: error.response.status, message: 'Haku ei onnistunut: ' + error.message });
+      return ({ status: error.response.status, message: 'Muokkaus ei onnistunut: ' + error.message })
   }
 }
