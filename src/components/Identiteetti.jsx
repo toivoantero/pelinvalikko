@@ -27,6 +27,7 @@ function Identiteetti() {
     const { varusteetResponse } = useLoaderData();
     const varusteet = varusteetResponse.data;
     const [viesti, setViesti] = useState('');
+    const [aseVirhe, setAseVirhe] = useState(false);
     const [dialogivalinta, setDialogivalinta] = useState('');
     let strategiAseet = varusteet.filter(ase => ase.tyyppi == "Yhden käden" && ase.paino < 5 && ase.omistaja === 'pelaaja');
     let tiedustelijaAseet = varusteet.filter(ase => ase.paino < 10 && ase.omistaja === 'pelaaja');
@@ -45,49 +46,58 @@ function Identiteetti() {
     });
 
     const muutaTieto = (e) => {
-        setSeikkailija({
-            ...seikkailija,
-            [e.target.name]: e.target.value
-        });
-    };
-    /*
-    const muutaTieto = async (e) => {
         const { name, value } = e.target;
 
-        // Päivitetään seikkailijan tiedot tilassa
-        setSeikkailija((prevSeikkailija) => ({
-            ...prevSeikkailija,
-            [name]: value,
-            ...(name === 'ammatti' && { ase: null }) // Jos ammatti muuttuu, asetetaan ase nulliksi
-        }));
+        setSeikkailija((prevSeikkailija) => {
+            let uusiAse = prevSeikkailija.ase;
 
-        // Jos ammatti muuttuu, päivitetään tietokanta
-        if (name === 'ammatti') {
-            try {
-                const response = await updateSeikkailija(seikkailija.id, { ...seikkailija, ammatti: value, ase: null });
-                if (response.status === 200) {
-                    console.log('Ammatti päivitetty ja ase nollattu tietokantaan');
-                } else {
-                    console.error('Tietokannan päivitys epäonnistui:', response.message);
+            if (name === 'ammatti') {
+                const sallitutAseet = value === "Strategi" ? strategiAseet.map(ase => ase.nimi) :
+                    value === "Tiedustelija" ? tiedustelijaAseet.map(ase => ase.nimi) :
+                        value === "Ritari" ? ritariAseet.map(ase => ase.nimi) : [];
+
+                if (!sallitutAseet.includes(prevSeikkailija.ase)) {
+                    uusiAse = '-';
                 }
-            } catch (error) {
-                console.error('Virhe päivitettäessä tietokantaa:', error);
             }
-        }
+
+            return {
+                ...prevSeikkailija,
+                [name]: value,
+                ...(name === 'ammatti' && { ase: uusiAse })
+            };
+        });
     };
-    */
+
     const paivitaSeikkailija = async () => {
-        const response = await updateSeikkailija(seikkailija.id, seikkailija);
-        if (response.status === 200) {
-            setViesti('Seikkailijan tiedot ovat nyt muutetut');
+        if (seikkailija.ase === '-') {
+            setAseVirhe(true);
+            setViesti('Seikkailijalle on valittava ase.');
             setDialogivalinta(
                 <DialogActions>
                     <Button onClick={handleClose} autoFocus>Sulje</Button>
                 </DialogActions>
             );
             handleClickOpen();
-        } else {
-            alert('Päivitys epäonnistui: ' + response.message);
+            return;
+        }
+
+        try {
+            const response = await updateSeikkailija(seikkailija.id, seikkailija);
+            if (response.status === 200) {
+                setAseVirhe(false);
+                setViesti('Seikkailijan tiedot ovat nyt muutetut');
+                setDialogivalinta(
+                    <DialogActions>
+                        <Button onClick={handleClose} autoFocus>Sulje</Button>
+                    </DialogActions>
+                );
+                handleClickOpen();
+            } else {
+                alert('Päivitys epäonnistui: ' + response.message);
+            }
+        } catch (error) {
+            console.error('Virhe päivitettäessä tietokantaa:', error);
         }
     };
 
@@ -137,7 +147,6 @@ function Identiteetti() {
                     <CardMedia sx={{ height: 'auto', width: 200 }}
                         component='img'
                         image={'/api/lataa/' + seikkailija.kuva}
-                        //image={'http://localhost:8080/lataa/' + seikkailija.kuva}
                         alt={seikkailija.nimi} />
                     :
                     <Typography sx={{ height: 100, width: 200 }}>Ei kuvaa</Typography>}
@@ -182,7 +191,7 @@ function Identiteetti() {
                         </Select>
                     </FormControl>
 
-                    <FormControl fullWidth>
+                    <FormControl fullWidth error={aseVirhe}>
                         <InputLabel id="ase-label">Ase</InputLabel>
                         <Select
                             labelId="ase-label"
@@ -190,13 +199,17 @@ function Identiteetti() {
                             label="Ase"
                             name='ase'
                             value={seikkailija.ase || ''}
-                            onChange={muutaTieto}
+                            onChange={(e) => {
+                                muutaTieto(e);
+                                setAseVirhe(false);
+                            }}
                             MenuProps={{
                                 PaperProps: {
                                     sx: { backgroundColor: '#6b7a8a', color: 'white' }
                                 }
                             }}
                         >
+                            <MenuItem value="" disabled></MenuItem>
                             {seikkailija.ammatti === "Strategi" && strategiAseet.map((ase, index) => (
                                 <MenuItem key={index} value={ase.nimi}>
                                     {ase.nimi}

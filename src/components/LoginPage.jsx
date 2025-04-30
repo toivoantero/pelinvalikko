@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, Button } from '@mui/material';
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true); // State to toggle between login and register
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState([]);
+  const [viesti, setViesti] = useState('');
+  const [dialogivalinta, setDialogivalinta] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,12 +36,28 @@ const LoginPage = () => {
       // Register
       try {
         const response = await axios.post('/api/register', { username, password });
-        alert('Rekisteröytyminen onnistui, nyt voit kirjautua.');
+        setViesti('Rekisteröytyminen onnistui, nyt voit kirjautua.');
+        setDialogivalinta(
+          <DialogActions>
+            <Button onClick={handleClose} autoFocus>Sulje</Button>
+          </DialogActions>
+        );
+        handleClickOpen();
         setIsLogin(true);
       } catch (err) {
         setError(['Rekisteröityminen epäonnistui.', 'Käyttäjänimi voi olla jo olemassa.']);
       }
     }
+  };
+
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -55,24 +73,24 @@ const LoginPage = () => {
         <h2>{isLogin ? 'Sisäänkirjautuminen' : 'Rekisteröityminen'}</h2>
         <form style={{ marginTop: '30px', width: '280px' }} onSubmit={handleSubmit}>
           <div style={{ display: 'flex', flexDirection: 'row' }}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <label style={{ margin: '0 8px 8px 0', textAlign: 'right', height: '20px' }}>Nimi</label>
-          <label style={{ margin: '0 8px 0 0', height: '20px' }}>Salasana</label>
-          </div>
-          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <input
-              style={{ height: '20px', margin: '0 0 8px 0' }}
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <input
-              style={{ height: '20px' }}
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <label style={{ margin: '0 8px 8px 0', textAlign: 'right', height: '20px' }}>Nimi</label>
+              <label style={{ margin: '0 8px 0 0', height: '20px' }}>Salasana</label>
+            </div>
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', width: '100%' }}>
+              <input
+                style={{ height: '20px', margin: '0 0 8px 0' }}
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <input
+                style={{ height: '20px' }}
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
           </div>
           <Button fullWidth type='submit' sx={{ margin: '30px 0 15px 0' }} variant='outlined' color="secondary">{isLogin ? 'Kirjaudu sisään' : 'Rekisteröidy'}</Button>
         </form>
@@ -91,6 +109,19 @@ const LoginPage = () => {
           :
           <p style={{ height: '20px' }}></p>}
       </div>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {viesti}
+          </DialogContentText>
+        </DialogContent>
+        {dialogivalinta}
+      </Dialog>
     </div>
   );
 };
