@@ -229,18 +229,18 @@ function Varvaa() {
             </Form>
 
             <PaperOpaque>
-                <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', minWidth: 400 }}>
+                <Box sx={{ height: '100%', display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', minWidth: { xs: '50%', sm: 400 } }}>
                     {kuvakytkin == true ?
-                        <Box>
+                        <Box sx={{ height: {xs: '50%', sm: 'auto'}, marginTop: {xs: '20px'} }}>
                             {seikkailija.kuva ?
-                                <CardMedia sx={{ height: 'auto', width: 200 }}
+                                <CardMedia sx={{ height: {xs: '100%', sm: 'auto'}, width: { xs: '70%', sm: 200 } }}
                                     component='img'
                                     image={'/api/lataa/' + seikkailija.kuva}
                                     //image={'http://localhost:8080/lataa/' + seikkailija.kuva}
                                     alt={seikkailija.nimi}
                                 />
                                 :
-                                <CardMedia sx={{ height: 'auto', width: 200 }}
+                                <CardMedia sx={{ height: {xs: '100%', sm: 'auto'}, width: { xs: '70%', sm: 200 } }}
                                     component='img'
                                     image={'/api/lataa/' + lisatty[lisatty.length - 1].kuva}
                                     //image={'http://localhost:8080/lataa/' + lisatty[lisatty.length - 1].kuva}
@@ -251,7 +251,7 @@ function Varvaa() {
                         :
                         <Box sx={{ height: 'auto', width: 'auto' }}></Box>
                     }
-                    <Box sx={{ position: 'relative', left: '0%', minWidth: 200 }}>
+                    <Box sx={{ position: 'relative', left: '0%', marginTop: {xs: '30px'}, minWidth: { xs: '50%', sm: 200 }}}>
                         {viesti}
                     </Box>
 

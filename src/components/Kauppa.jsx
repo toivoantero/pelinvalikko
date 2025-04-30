@@ -128,7 +128,7 @@ function Kauppa() {
                 }}>
                 <Typography padding="0 0 30px 0">{rahat} kultaa</Typography>
                 <Button variant='outlined' onClick={vaihto}>osta
-                    <br />tai<br />myy
+                    <br />&#9664; &#9654;<br />myy 
                 </Button>
             </Box>
             <VarusteLista
