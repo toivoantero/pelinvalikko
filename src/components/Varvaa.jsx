@@ -61,7 +61,7 @@ function Varvaa() {
                             ika: 30,
                             kokemuspisteet: 1.74,
                             ase: '',
-                            kuva: ''
+                            kuva: 'tyhjaseikkailija.png',
                         });
                     } else {
                         setViesti('Seikkailijan värvääminen epäonnistui.');
@@ -194,7 +194,7 @@ function Varvaa() {
     }, [seikkailija.ammatti]);
 
     const lisattyVarastoon = () => {
-        setLisatty([{ nimi: seikkailija.nimi, kuva: seikkailija.kuva }]);
+        setLisatty([{ nimi: seikkailija.nimi, kuva: seikkailija.kuva || 'tyhjaseikkailija.png' }]);
     };
 
     const handleSubmit = (e) => {
@@ -248,7 +248,7 @@ function Varvaa() {
             <PaperOpaque sx={{ width: { xs: '100%', sm: 400 } }}>
                 <Box sx={{ height: '100%', display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', minWidth: { xs: '100%', sm: 400 } }}>
                     {kuvakytkin == true ?
-                        <Box sx={{ height: { xs: '50%', sm: 'auto' }, margin: {xs: '20px 0', sm: 0} }}>
+                        <Box sx={{ height: { xs: '50%', sm: 'auto' }, margin: { xs: '20px 0', sm: 0 } }}>
                             {seikkailija.kuva ?
                                 <CardMedia sx={{ height: { xs: '100%', sm: 'auto' }, width: { xs: '90%', sm: 200 } }}
                                     component='img'
