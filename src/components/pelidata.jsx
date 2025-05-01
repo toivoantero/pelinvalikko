@@ -3,13 +3,11 @@ import axios from 'axios';
 let palvelinSeikkailijat = 'https://pelivalikkoreactnode.onrender.com/api/seikkailija/';
 let palvelinPelaaja = 'https://pelivalikkoreactnode.onrender.com/api/pelaaja/';
 let palvelinVarusteet = 'https://pelivalikkoreactnode.onrender.com/api/varusteet/';
-
 /*
 let palvelinSeikkailijat = 'http://localhost:8080/api/seikkailija/';
 let palvelinPelaaja = '/api/pelaaja/';
 let palvelinVarusteet = '/api/varusteet/';
 */
-
 export const getSeikkailijat = async () => {
   try {
     const token = localStorage.getItem('token');

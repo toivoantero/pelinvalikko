@@ -137,10 +137,10 @@ function Identiteetti() {
         <Stack
             className="custom-textfield"
             direction="row"
-            spacing={4}
+            spacing={{xs: 0, sm: 4}}
             marginTop={4}
             marginX="auto"
-            width="80vw"
+            width={{xs: "80vw", sm: "10vw"}}
             justifyContent="center">
             <Box sx={{ background: "rgba(40,60,85,0)", textAlign: 'center', paddingTop: 2 }}>
                 {seikkailija.kuva ?
@@ -159,7 +159,7 @@ function Identiteetti() {
                     component='form'
                     marginTop={2}
                     marginX="auto"
-                    width="40vw"
+                    width={{xs: "40vw", lg: "25vw", xl: "20vw"}}
                     justifyContent="center">
 
                     <TextField

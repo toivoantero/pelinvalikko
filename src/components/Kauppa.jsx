@@ -107,7 +107,7 @@ function Kauppa() {
     return (
         <Stack
             direction="row"
-            spacing={4}
+            spacing={{xs: 1, sm: 4}}
             marginTop={2}
             marginX="auto"
             width="80vw"

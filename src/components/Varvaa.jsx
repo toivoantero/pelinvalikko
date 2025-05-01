@@ -46,10 +46,10 @@ function Varvaa() {
                             <Box>
                                 <Typography sx={{ color: "#FFCC33" }}>Tervetuloa ryhmään! </Typography>
                                 <Box sx={{ color: 'white' }}>
-                                    <Typography>Nimi: {seikkailija.nimi}</Typography>
-                                    <Typography>Ammatti: {seikkailija.ammatti}</Typography>
-                                    <Typography>Ikä: {seikkailija.ika}</Typography>
-                                    <Typography>Taso: {Math.floor(seikkailija.kokemuspisteet)}</Typography>
+                                    <Typography sx={{ fontSize: 'small' }}>Nimi: {seikkailija.nimi}</Typography>
+                                    <Typography sx={{ fontSize: 'small' }}>Ammatti: {seikkailija.ammatti}</Typography>
+                                    <Typography sx={{ fontSize: 'small' }}>Ikä: {seikkailija.ika}</Typography>
+                                    <Typography sx={{ fontSize: 'small' }}>Taso: {Math.floor(seikkailija.kokemuspisteet)}</Typography>
                                 </Box>
                             </Box>
                         );
@@ -72,13 +72,29 @@ function Varvaa() {
             } else {
                 setKuvakytkin(false);
                 setViesti(
-                    <Typography sx={{ color: "#FFCC33", width: 400, textAlign: 'center' }}>Valitse värvättävän<br></br>seikkailijan ammatti.</Typography>
+                    <Typography
+                        sx={{
+                            position: 'relative',
+                            color: "#FFCC33",
+                            width: { xs: '100%', sm: 400 },
+                            textAlign: 'center',
+                            top: { xs: '50%', sm: 0 },
+                            transform: { xs: 'translateY(-50%)', sm: 0 }
+                        }}>Valitse värvättävän<br></br>seikkailijan ammatti.</Typography>
                 );
             }
         } else {
             setKuvakytkin(false);
             setViesti(
-                <Typography sx={{ color: "#FFCC33", width: 400, textAlign: 'center' }}>Seikkailijoiden ryhmään<br></br>ei mahdu enempää, kuin 6.</Typography>
+                <Typography
+                    sx={{
+                        position: 'relative',
+                        color: "#FFCC33",
+                        width: { xs: '100%', sm: 400 },
+                        textAlign: 'center',
+                        top: { xs: '50%', sm: 0 },
+                        transform: { xs: 'translateY(-50%)', sm: 0 }
+                    }}>Seikkailijoiden ryhmään<br></br>ei mahdu enempää, kuin 6.</Typography>
             );
         }
     }
@@ -199,7 +215,7 @@ function Varvaa() {
                 <Box sx={{ width: '30vw' }}>
                     <Typography paddingTop={2} paddingBottom={4}>Valitse mitä ammattia haluat seikkailijasi<br></br>edustavan ja minkä ikäinen hän on.</Typography>
                     <FormControl fullWidth>
-                        <InputLabel id="ammatti-label">Ammatti</InputLabel>
+                        <InputLabel sx={{ fontSize: 'small' }} id="ammatti-label">Ammatti</InputLabel>
                         <Select
                             labelId="ammatti-label"
                             id='ammatti'
@@ -207,6 +223,7 @@ function Varvaa() {
                             name='ammatti'
                             value={seikkailija.ammatti}
                             onChange={valintaIkaAmmatti}
+                            sx={{ fontSize: 'small' }}
                         >
                             <MenuItem value="Ritari">Ritari</MenuItem>
                             <MenuItem value="Tiedustelija">Tiedustelija</MenuItem>
@@ -228,19 +245,19 @@ function Varvaa() {
                 </Box>
             </Form>
 
-            <PaperOpaque>
-                <Box sx={{ height: '100%', display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', minWidth: { xs: '50%', sm: 400 } }}>
+            <PaperOpaque sx={{ width: { xs: '100%', sm: 400 } }}>
+                <Box sx={{ height: '100%', display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', minWidth: { xs: '100%', sm: 400 } }}>
                     {kuvakytkin == true ?
-                        <Box sx={{ height: {xs: '50%', sm: 'auto'}, marginTop: {xs: '20px'} }}>
+                        <Box sx={{ height: { xs: '50%', sm: 'auto' }, margin: {xs: '20px 0', sm: 0} }}>
                             {seikkailija.kuva ?
-                                <CardMedia sx={{ height: {xs: '100%', sm: 'auto'}, width: { xs: '70%', sm: 200 } }}
+                                <CardMedia sx={{ height: { xs: '100%', sm: 'auto' }, width: { xs: '90%', sm: 200 } }}
                                     component='img'
                                     image={'/api/lataa/' + seikkailija.kuva}
                                     //image={'http://localhost:8080/lataa/' + seikkailija.kuva}
                                     alt={seikkailija.nimi}
                                 />
                                 :
-                                <CardMedia sx={{ height: {xs: '100%', sm: 'auto'}, width: { xs: '70%', sm: 200 } }}
+                                <CardMedia sx={{ height: { xs: '100%', sm: 'auto' }, width: { xs: '90%', sm: 200 } }}
                                     component='img'
                                     image={'/api/lataa/' + lisatty[lisatty.length - 1].kuva}
                                     //image={'http://localhost:8080/lataa/' + lisatty[lisatty.length - 1].kuva}
@@ -251,7 +268,7 @@ function Varvaa() {
                         :
                         <Box sx={{ height: 'auto', width: 'auto' }}></Box>
                     }
-                    <Box sx={{ position: 'relative', left: '0%', marginTop: {xs: '30px'}, minWidth: { xs: '50%', sm: 200 }}}>
+                    <Box sx={{ height: { xs: '100%', sm: 'auto' }, margin: { xs: '0 20px', sm: 0 } }}>
                         {viesti}
                     </Box>
 
