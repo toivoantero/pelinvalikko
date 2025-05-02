@@ -46,10 +46,10 @@ function Varvaa() {
                             <Box>
                                 <Typography sx={{ color: "#FFCC33" }}>Tervetuloa ryhmään! </Typography>
                                 <Box sx={{ color: 'white' }}>
-                                    <Typography sx={{ fontSize: 'small' }}>Nimi: {seikkailija.nimi}</Typography>
-                                    <Typography sx={{ fontSize: 'small' }}>Ammatti: {seikkailija.ammatti}</Typography>
-                                    <Typography sx={{ fontSize: 'small' }}>Ikä: {seikkailija.ika}</Typography>
-                                    <Typography sx={{ fontSize: 'small' }}>Taso: {Math.floor(seikkailija.kokemuspisteet)}</Typography>
+                                    <Typography sx={{ fontSize: {xs: 'small', sm: 'initial'} }}>Nimi: {seikkailija.nimi}</Typography>
+                                    <Typography sx={{ fontSize: {xs: 'small', sm: 'initial'} }}>Ammatti: {seikkailija.ammatti}</Typography>
+                                    <Typography sx={{ fontSize: {xs: 'small', sm: 'initial'} }}>Ikä: {seikkailija.ika}</Typography>
+                                    <Typography sx={{ fontSize: {xs: 'small', sm: 'initial'} }}>Taso: {Math.floor(seikkailija.kokemuspisteet)}</Typography>
                                 </Box>
                             </Box>
                         );
@@ -206,16 +206,16 @@ function Varvaa() {
         <Stack
             className="custom-textfield"
             direction="row"
-            spacing={4}
+            spacing={{xs: 2, sm: 4}}
             marginTop={4}
             marginX="auto"
             width="80vw"
             justifyContent="center">
             <Form onSubmit={handleSubmit} encType='multipart/form-data'>
-                <Box sx={{ width: '30vw' }}>
+                <Box sx={{ width: {xs: '40vw', sm: '30vw'} }}>
                     <Typography paddingTop={2} paddingBottom={4}>Valitse mitä ammattia haluat seikkailijasi<br></br>edustavan ja minkä ikäinen hän on.</Typography>
                     <FormControl fullWidth>
-                        <InputLabel sx={{ fontSize: 'small' }} id="ammatti-label">Ammatti</InputLabel>
+                        <InputLabel id="ammatti-label">Ammatti</InputLabel>
                         <Select
                             labelId="ammatti-label"
                             id='ammatti'
@@ -223,7 +223,6 @@ function Varvaa() {
                             name='ammatti'
                             value={seikkailija.ammatti}
                             onChange={valintaIkaAmmatti}
-                            sx={{ fontSize: 'small' }}
                         >
                             <MenuItem value="Ritari">Ritari</MenuItem>
                             <MenuItem value="Tiedustelija">Tiedustelija</MenuItem>
@@ -245,7 +244,7 @@ function Varvaa() {
                 </Box>
             </Form>
 
-            <PaperOpaque sx={{ width: { xs: '100%', sm: 400 } }}>
+            <PaperOpaque sx={{ minWidth: '148px', width: { xs: '100%', sm: 400 } }}>
                 <Box sx={{ height: '100%', display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', minWidth: { xs: '100%', sm: 400 } }}>
                     {kuvakytkin == true ?
                         <Box sx={{ height: { xs: '50%', sm: 'auto' }, margin: { xs: '20px 0', sm: 0 } }}>
