@@ -11,7 +11,6 @@ const cors = require('cors');
 const saltRounds = 10;
 const jwtSecret = 'your_jwt_secret';
 let helmet = require('helmet');
-const fs = require('fs');
 
 app.use(helmet({ crossOriginResourcePolicy: false }))
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
