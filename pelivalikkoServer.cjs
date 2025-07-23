@@ -17,7 +17,9 @@ app.use(express.urlencoded({ limit: '5mb', extended: true }));
 app.use(express.json());
 app.use(cors());
 
-const db = new sqlite3.Database('pelivalikko.db', (error) => {
+const dbPath = path.resolve(__dirname, 'pelivalikko.db');
+console.log('Tietokantapolku:', dbPath);
+const db = new sqlite3.Database(dbPath, (error) => {
     if (error) {
         console.log(error.message);
         // Palauta virhe jos tietokantaa ei voida avata
