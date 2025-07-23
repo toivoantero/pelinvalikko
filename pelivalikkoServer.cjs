@@ -11,6 +11,7 @@ const cors = require('cors');
 const saltRounds = 10;
 const jwtSecret = 'your_jwt_secret';
 let helmet = require('helmet');
+const fs = require('fs');
 
 app.use(helmet({ crossOriginResourcePolicy: false }))
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
@@ -19,12 +20,14 @@ app.use(cors());
 
 const dbPath = path.resolve(__dirname, 'pelivalikko.db');
 console.log('Tietokantapolku:', dbPath);
+console.log('Tietokanta olemassa:', fs.existsSync(dbPath));
+
 const db = new sqlite3.Database(dbPath, (error) => {
-    if (error) {
-        console.log(error.message);
-        // Palauta virhe jos tietokantaa ei voida avata
-        throw error;
-    }
+  if (error) {
+    console.error('Tietokannan avaaminen epäonnistui:', error);
+  } else {
+    console.log('Yhdistetty tietokantaan');
+  }
 });
 
 // Luo HTTP-palvelin
