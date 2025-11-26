@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FormControl, Stack, CardMedia, Select, Slider, Box, TextField, Button, InputLabel, Typography, MenuItem } from '@mui/material';
 import { PaperOpaque } from '../App';
 import { Form } from 'react-router-dom';
-import { addSeikkailija, getSeikkailijat, getVarusteet } from './pelidata';
+import { addSeikkailija, getSeikkailijat, getVarusteet, getNimet } from './pelidata';
 
 function Varvaa() {
     const [seikkailijat, setSeikkailijat] = useState([]);
@@ -10,6 +10,7 @@ function Varvaa() {
     const [kuvakytkin, setKuvakytkin] = useState(true);
     const [aseet, setAseet] = useState([]);
     const [lisatty, setLisatty] = useState([{ kuva: 'tyhjaseikkailija.png' }]);
+    const [nimet, setNimet] = useState({});
     const [seikkailija, setSeikkailija] = useState({
         nimi: '',
         ammatti: '',
@@ -21,7 +22,8 @@ function Varvaa() {
 
     const fetchData = async () => {
         try {
-            const [aseetResponse, seikkailijatResponse] = await Promise.all([getVarusteet(), getSeikkailijat()]);
+            const [aseetResponse, seikkailijatResponse, nimetResponse]
+                = await Promise.all([getVarusteet(), getSeikkailijat(), getNimet()]);
             if (aseetResponse.status === 400) {
                 throw new Error(aseetResponse.message);
             }
@@ -30,6 +32,7 @@ function Varvaa() {
             }
             setAseet(aseetResponse.data.filter(ase => ase.omistaja === 'pelaaja'));
             setSeikkailijat(seikkailijatResponse.data);
+            setNimet({ nainen: [nimetResponse.nainen], mies: [nimetResponse.mies] });
         } catch (error) {
             console.error("Virhe haettaessa aseita tai seikkailijaa:", error);
         }
@@ -46,10 +49,10 @@ function Varvaa() {
                             <Box>
                                 <Typography sx={{ color: "#FFCC33" }}>Tervetuloa ryhmään! </Typography>
                                 <Box sx={{ color: 'white' }}>
-                                    <Typography sx={{ fontSize: {xs: 'small', sm: 'initial'} }}>Nimi: {seikkailija.nimi}</Typography>
-                                    <Typography sx={{ fontSize: {xs: 'small', sm: 'initial'} }}>Ammatti: {seikkailija.ammatti}</Typography>
-                                    <Typography sx={{ fontSize: {xs: 'small', sm: 'initial'} }}>Ikä: {seikkailija.ika}</Typography>
-                                    <Typography sx={{ fontSize: {xs: 'small', sm: 'initial'} }}>Taso: {Math.floor(seikkailija.kokemuspisteet)}</Typography>
+                                    <Typography sx={{ fontSize: { xs: 'small', sm: 'initial' } }}>Nimi: {seikkailija.nimi}</Typography>
+                                    <Typography sx={{ fontSize: { xs: 'small', sm: 'initial' } }}>Ammatti: {seikkailija.ammatti}</Typography>
+                                    <Typography sx={{ fontSize: { xs: 'small', sm: 'initial' } }}>Ikä: {seikkailija.ika}</Typography>
+                                    <Typography sx={{ fontSize: { xs: 'small', sm: 'initial' } }}>Taso: {Math.floor(seikkailija.kokemuspisteet)}</Typography>
                                 </Box>
                             </Box>
                         );
@@ -61,7 +64,7 @@ function Varvaa() {
                             ika: 30,
                             kokemuspisteet: 1.74,
                             ase: '',
-                            kuva: 'tyhjaseikkailija.png',
+                            kuva: '',
                         });
                     } else {
                         setViesti('Seikkailijan värvääminen epäonnistui.');
@@ -107,6 +110,7 @@ function Varvaa() {
     const taydennaSeikkailija = () => {
 
         const valintaAse = () => {
+            if (!seikkailija.ammatti) return;
             if (aseet.length > 0) {
                 let aseetAmmatinMukaan;
                 if (seikkailija.ammatti === "Tiedustelija") {
@@ -124,71 +128,78 @@ function Varvaa() {
             }
         }
 
-        const valintaNimi = () => {
-            let satunnainenNimilista;
-            let satunnainenNimi;
-            const nimet = {
-                neutraali: ["Oni", "Kide", "Ashley"],
-                mies: ["Visa", "Balthasar", "Ansgarius"],
+        const valintaNimiJaSukupuoli = () => {
+            let paikallisetNimet = {
                 nainen: ["Saga", "Hildegard", "Megara"],
+                mies: ["Visa", "Balthasar", "Ansgarius"],
+                neutraali: ["Oni", "Kide", "Ashley", "Robin", "Squall", "Skylar"],
             };
+            let arvottuNimiJaSukupuoli = {};
+            let valittuNimilista = {};
+            // Tee testi sille, että jos nimet on haettu API:sta onnistuneesti
+            if (nimet) {
+                valittuNimilista = nimet;
+            } else {
+                valittuNimilista = paikallisetNimet;
+            }
+            console.log("testi:" + Object.keys(valittuNimilista))
             do {
-                satunnainenNimilista =
-                    Math.random() < 0.33 ? nimet.neutraali :
-                        Math.random() < 0.66 ? nimet.mies :
-                            nimet.nainen;
-                satunnainenNimi = satunnainenNimilista[Math.floor(Math.random() * satunnainenNimilista.length)];
-            } while (satunnainenNimi === lisatty[lisatty.length - 1].nimi); // Jotta ei seuraavalla seikkailijalle tulisi samaa nimeä, kuin edelliselle.
-            return { nimi: satunnainenNimi, nimilista: satunnainenNimilista, nimiobjekti: nimet };
+                arvottuNimiJaSukupuoli =
+                    Math.random() < 0.33 ? {
+                        nimi: paikallisetNimet.neutraali[Math.floor(Math.random() * paikallisetNimet.neutraali.length)],
+                        sukupuoli: 'neutraali'
+                    } : Math.random() < 0.66 ? {
+                        nimi: valittuNimilista.nainen[Math.floor(Math.random() * valittuNimilista.nainen.length)],
+                        sukupuoli: "nainen"
+                    } : {
+                        nimi: valittuNimilista.mies[Math.floor(Math.random() * valittuNimilista.mies.length)],
+                        sukupuoli: "mies"
+                    };
+            } while (arvottuNimiJaSukupuoli === lisatty[lisatty.length - 1]?.nimi);
+            return arvottuNimiJaSukupuoli;
         }
 
-        const valintaKuva = (satunnainenNimilista, nimet) => {
+        const valintaKuva = (henkilo) => {
+            console.log("Nimi ja sukupuoli:", henkilo);
             let kuvaNimenJaAmmatinMukaan = null;
             const arvottuLuku = Math.floor(Math.random() * 2);
             if (seikkailija.ammatti === "Strategi") {
-                if (satunnainenNimilista === nimet.neutraali) {
+                if (henkilo.sukupuoli === 'neutraali') {
                     kuvaNimenJaAmmatinMukaan = arvottuLuku === 0 ? 'strategi_m.png' : 'strategi_n.png';
-                } else if (satunnainenNimilista === nimet.mies) {
+                } else if (henkilo.sukupuoli === 'mies') {
                     kuvaNimenJaAmmatinMukaan = 'strategi_m.png';
-                } else if (satunnainenNimilista === nimet.nainen) {
+                } else if (henkilo.sukupuoli === 'nainen') {
                     kuvaNimenJaAmmatinMukaan = 'strategi_n.png';
                 } else {
                     console.log("Jotain meni pieleen.");
                 }
-            } else if (seikkailija.ammatti === "Ritari") {
-                if (satunnainenNimilista === nimet.neutraali) {
-                    kuvaNimenJaAmmatinMukaan = 'ritari.png';
-                } else if (satunnainenNimilista === nimet.mies) {
-                    kuvaNimenJaAmmatinMukaan = 'ritari.png';
-                } else if (satunnainenNimilista === nimet.nainen) {
-                    kuvaNimenJaAmmatinMukaan = 'ritari.png';
-                } else {
-                    console.log("Jotain meni pieleen.");
-                }
             } else if (seikkailija.ammatti === "Tiedustelija") {
-                if (satunnainenNimilista === nimet.neutraali) {
+                if (henkilo.sukupuoli === 'neutraali') {
                     kuvaNimenJaAmmatinMukaan = arvottuLuku === 0 ? 'tiedustelija_m.png' : 'tiedustelija_n.png';
-                } else if (satunnainenNimilista === nimet.mies) {
+                } else if (henkilo.sukupuoli === 'mies') {
                     kuvaNimenJaAmmatinMukaan = 'tiedustelija_m.png';
-                } else if (satunnainenNimilista === nimet.nainen) {
+                } else if (henkilo.sukupuoli === 'nainen') {
                     kuvaNimenJaAmmatinMukaan = 'tiedustelija_n.png';
                 } else {
                     console.log("Jotain meni pieleen.");
                 }
+            } else if (seikkailija.ammatti === "Ritari") {
+                kuvaNimenJaAmmatinMukaan = 'ritari.png';
             }
             return kuvaNimenJaAmmatinMukaan;
         }
 
-        const { nimi, nimilista, nimiobjekti } = valintaNimi();
-        const kuva = valintaKuva(nimilista, nimiobjekti);
+        const henkilo = valintaNimiJaSukupuoli();
+        const kuva = valintaKuva(henkilo);
         const ase = valintaAse();
 
-        setSeikkailija({ ...seikkailija, nimi: nimi, ase: ase, kuva: kuva });
+        setSeikkailija(prev => ({ ...prev, nimi: henkilo.nimi, ase: ase, kuva: kuva }));
     }
 
     useEffect(() => { fetchData(), setKuvakytkin(true) }, []);
     useEffect(() => { fetchData() }, [seikkailija]);
     useEffect(() => {
+        if (!seikkailija.ammatti) return;
         taydennaSeikkailija();
         setKuvakytkin(true);
     }, [seikkailija.ammatti]);
@@ -206,13 +217,13 @@ function Varvaa() {
         <Stack
             className="custom-textfield"
             direction="row"
-            spacing={{xs: 2, sm: 4}}
+            spacing={{ xs: 2, sm: 4 }}
             marginTop={4}
             marginX="auto"
             width="80vw"
             justifyContent="center">
             <Form onSubmit={handleSubmit} encType='multipart/form-data'>
-                <Box sx={{ width: {xs: '40vw', sm: '30vw'} }}>
+                <Box sx={{ width: { xs: '40vw', sm: '30vw' } }}>
                     <Typography paddingTop={2} paddingBottom={4}>Valitse mitä ammattia haluat seikkailijasi<br></br>edustavan ja minkä ikäinen hän on.</Typography>
                     <FormControl fullWidth>
                         <InputLabel id="ammatti-label">Ammatti</InputLabel>

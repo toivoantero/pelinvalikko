@@ -81,6 +81,37 @@ export const getVarusteet = async () => {
     }
 };
 
+export const getNimet = async () => {
+    try {
+        const [respNainen, respMies] = await Promise.all([
+            axios.get('https://fantasyname.lukewh.com/?gender=f'),
+            axios.get('https://fantasyname.lukewh.com/?gender=m')
+        ]);
+
+        const parseNimi = (data) => {
+            if (!data) return '';
+            if (Array.isArray(data) && data.length > 0) return data[0];
+            if (typeof data === 'object' && data.name) return data.name;
+            if (typeof data === 'string') return data;
+            return '';
+        };
+
+        const nimiNainen = parseNimi(respNainen.data);
+        const nimiMies = parseNimi(respMies.data);
+
+        return {
+            nainen: nimiNainen || 'Megara',
+            mies: nimiMies || 'Balthasar'
+        };
+    } catch (error) {
+        console.error('Fantasy name API error:', error?.message || error);
+        return {
+            nainen: 'Megara',
+            mies: 'Balthasar'
+        };
+    }
+};
+
 export const updateVarusteet = async (id, data) => {
   try {
       const response = await axios.put(palvelinVarusteet + 'update/' + id, data);
