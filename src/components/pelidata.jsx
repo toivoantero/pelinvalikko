@@ -1,13 +1,15 @@
 import axios from 'axios';
-/*
+
 let palvelinSeikkailijat = 'https://pelivalikkoreactnode.onrender.com/api/seikkailija/';
 let palvelinPelaaja = 'https://pelivalikkoreactnode.onrender.com/api/pelaaja/';
 let palvelinVarusteet = 'https://pelivalikkoreactnode.onrender.com/api/varusteet/';
-*/
+let palvelinNimet = 'https://pelivalikkoreactnode.onrender.com/api/nimet/';
+/*
 let palvelinSeikkailijat = '/api/seikkailija/';
 let palvelinPelaaja = '/api/pelaaja/';
 let palvelinVarusteet = '/api/varusteet/';
 let palvelinNimet = '/api/nimet/';
+*/
 
 export const getSeikkailijat = async () => {
   try {
