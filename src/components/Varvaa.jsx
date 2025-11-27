@@ -5,6 +5,7 @@ import { Form } from 'react-router-dom';
 import { addSeikkailija, getSeikkailijat, getVarusteet, getNimet } from './pelidata';
 
 function Varvaa() {
+    const [kesken, setKesken] = useState(false);
     const [seikkailijat, setSeikkailijat] = useState([]);
     const [viesti, setViesti] = useState('');
     const [kuvakytkin, setKuvakytkin] = useState(true);
@@ -208,9 +209,15 @@ function Varvaa() {
         setLisatty([{ nimi: seikkailija.nimi, kuva: seikkailija.kuva || 'tyhjaseikkailija.png' }]);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        lisaaSeikkailija();
+        if (kesken) return;
+        setKesken(true);
+        try {
+            await lisaaSeikkailija();
+        } finally {
+            setKesken(false);
+        }
     };
 
     return (

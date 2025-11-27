@@ -3,15 +3,16 @@ import { Dialog, DialogActions, DialogContent, DialogContentText, FormControl, S
 import { useParams } from 'react-router';
 import { getVarusteet, deleteSeikkailija, updateSeikkailija } from './pelidata';
 import { useLoaderData, Form, redirect } from 'react-router-dom';
+import { useNavigation } from "react-router-dom";
 
 export async function PoistoAction({ request }) {
     const formData = await request.formData();
-    let id = formData.get("id");
+    const id = formData.get("id");
     const response = await deleteSeikkailija(id);
-
-    if (response.status === 400 || response.status === 404) {
+    if (response.status === 400) {
         throw Error(response.message);
     }
+
     return redirect('/app/varustus');
 }
 
@@ -24,6 +25,8 @@ export async function YksiloLoader() {
 }
 
 function Identiteetti() {
+    const navigation = useNavigation();
+    const isSubmitting = navigation.state === "submitting";
     const { varusteetResponse } = useLoaderData();
     const varusteet = varusteetResponse.data;
     const [viesti, setViesti] = useState('');
@@ -107,7 +110,7 @@ function Identiteetti() {
             <DialogActions>
                 <Form style={{ width: '100%' }} action='/app/poisto' method='post'>
                     <input type='hidden' name='id' value={seikkailija.id} />
-                    <Button style={{ margin: '0 30px' }} type='submit' color="tertiary" variant='outlined'>Irtisano</Button>
+                    <Button style={{ margin: '0 30px' }} type='submit' color="tertiary" variant='outlined' disabled={isSubmitting}>{isSubmitting ? "Irtisanotaan..." : "Irtisano"}</Button>
                     <Button
                         style={{ float: 'right', margin: '0 30px' }}
                         type='reset'
