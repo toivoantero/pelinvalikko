@@ -1,13 +1,14 @@
 import axios from 'axios';
-
+/*
 let palvelinSeikkailijat = 'https://pelivalikkoreactnode.onrender.com/api/seikkailija/';
 let palvelinPelaaja = 'https://pelivalikkoreactnode.onrender.com/api/pelaaja/';
 let palvelinVarusteet = 'https://pelivalikkoreactnode.onrender.com/api/varusteet/';
-/*
-let palvelinSeikkailijat = 'http://localhost:8080/api/seikkailija/';
+*/
+let palvelinSeikkailijat = '/api/seikkailija/';
 let palvelinPelaaja = '/api/pelaaja/';
 let palvelinVarusteet = '/api/varusteet/';
-*/
+let palvelinNimet = '/api/nimet/';
+
 export const getSeikkailijat = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -81,34 +82,14 @@ export const getVarusteet = async () => {
     }
 };
 
+// hae nimet ulkoisesta API:sta
 export const getNimet = async () => {
     try {
-        const [respNainen, respMies] = await Promise.all([
-            axios.get('https://fantasyname.lukewh.com/?gender=f'),
-            axios.get('https://fantasyname.lukewh.com/?gender=m')
-        ]);
-
-        const parseNimi = (data) => {
-            if (!data) return '';
-            if (Array.isArray(data) && data.length > 0) return data[0];
-            if (typeof data === 'object' && data.name) return data.name;
-            if (typeof data === 'string') return data;
-            return '';
-        };
-
-        const nimiNainen = parseNimi(respNainen.data);
-        const nimiMies = parseNimi(respMies.data);
-
-        return {
-            nainen: nimiNainen || 'Megara',
-            mies: nimiMies || 'Balthasar'
-        };
+        const response = await axios.get(palvelinNimet);
+        return response.data;
     } catch (error) {
-        console.error('Fantasy name API error:', error?.message || error);
-        return {
-            nainen: 'Megara',
-            mies: 'Balthasar'
-        };
+        console.error('Nimien haku epäonnistui:', error);
+        return { nainen: 'Megara', mies: 'Balthasar' };
     }
 };
 

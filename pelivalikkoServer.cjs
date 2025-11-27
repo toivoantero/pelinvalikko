@@ -9,6 +9,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 const cors = require('cors');
 const saltRounds = 10;
+const axios = require('axios');
 const jwtSecret = 'your_jwt_secret';
 let helmet = require('helmet');
 
@@ -243,6 +244,30 @@ app.get('/api/lataa/:nimi', (req, res) => {
     res.download(file);
 });
 
+app.get('/api/nimet', async (req, res) => {
+    try {
+        const [respF, respM] = await Promise.all([
+            axios.get('https://fantasyname.lukewh.com/?gender=f'),
+            axios.get('https://fantasyname.lukewh.com/?gender=m')
+        ]);
+
+        const parse = (data) => {
+            if (Array.isArray(data) && data.length > 0) return data[0];
+            if (typeof data === 'object' && data.name) return data.name;
+            if (typeof data === 'string') return data;
+            return '';
+        };
+
+        res.status(200).json({
+            nainen: parse(respF.data) || 'Megara',
+            mies: parse(respM.data) || 'Balthasar'
+        });
+    } catch (error) {
+        console.error('Nimet API error:', error.message);
+        res.status(200).json({ nainen: 'Megara', mies: 'Balthasar' });
+    }
+});
+
 app.get('*', (req, res) => {
     return res.status(404).json({ message: 'Ei pyydettyä palvelua' });
 });
@@ -312,3 +337,4 @@ app.post('/api/login', (req, res) => {
     });
 });
   
+
