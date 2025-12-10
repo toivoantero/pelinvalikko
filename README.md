@@ -1,8 +1,32 @@
-# React + Vite
+# Pelinvalikko
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Pelinvalikko on React + Node.js + Express + SQLite -projekti, jossa toteutetaan pelin valikkonäkymä ja siihen liittyviä toimintoja. Projekti toimii harjoituspohjana erilaisille käyttöliittymä- ja sovelluskehityskokeiluille.
 
-Currently, two official plugins are available:
+## Teknologiat
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Frontend**
+- React
+- Vite
+
+**Backend**
+- Node.js
+- Express.js
+- SQLite
+- REST API
+
+## Asennus
+
+Kloonaa repo:
+
+```bash
+git clone https://github.com/toivoantero/pelinvalikko
+cd pelinvalikko
+
+npm install
+
+node pelivalikkoServer.cjs
+
+npm run dev
+
+
+
