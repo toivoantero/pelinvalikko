@@ -21,12 +21,15 @@ Kloonaa repo:
 ```bash
 git clone https://github.com/toivoantero/pelinvalikko
 cd pelinvalikko
-
+```
+```bash
 npm install
-
+```
+```bash
 node pelivalikkoServer.cjs
-
+```
+```bash
 npm run dev
-
+```
 
 
