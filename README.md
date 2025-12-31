@@ -9,6 +9,7 @@ Kuvitteellisen pelin valikko. Siinä voi luoda pelihahmoja ja ostaa heille varus
 ## Demo
 
 Sovellus on julkaistu Render-palvelussa, ja ensilataus kestää minuutin tai pari ilmaisversion vuoksi.
+
 [Kokeile sovellusta](https://pelivalikkoreactnode.onrender.com)
 
 ## Teknologiat
