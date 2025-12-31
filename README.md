@@ -16,8 +16,6 @@ Pelinvalikko on React + Node.js + Express + SQLite -projekti, jossa toteutetaan 
 
 ## Asennus
 
-Kloonaa repo:
-
 ```bash
 git clone https://github.com/toivoantero/pelinvalikko
 cd pelinvalikko
