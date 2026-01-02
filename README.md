@@ -14,14 +14,14 @@ Sovellus on julkaistu Render-palvelussa, ja ensilataus kestää minuutin tai par
 
 ## ✨ Toiminnallisuudet
 
-#### Rekisteröityminen ja sisäänkirjautuminen
+#### 1. Rekisteröityminen ja sisäänkirjautuminen
 ![Kirjautuminen](/kuvat/login.gif)
 
 Sovellukseen kirjautuminen edellyttää pelaajatilin rekisteröimistä. Sovellus validoi käyttäjän syötteet ja antaa ilmoituksen yleisissä virhetilanteissa, kuten jos yrittää rekisteröidä jo olemassa olevan käyttäjätunnuksen, tai jos käyttäjätunnus on väärä tai liian lyhyt.
 
 ---
 
-#### Värvääminen
+#### 2. Värvääminen
 ![Värvääminen](/kuvat/varvaa.gif)
 
 Pelaajalla on hallussaan seikkailijoiden ryhmä, jota voi kasvattaa värväämällä uusia seikkailijoita. Värvättävälle seikkailijalle valitaan ammatti valmiista listasta sekä ikä liukusäätimellä. Mikäli ammattia ei valita, sovellus näyttää virheilmoituksen.
@@ -30,7 +30,7 @@ Ryhmän maksimikoko on kuusi seikkailijaa. Mikäli värväystä yritetään täm
 
 ---
 
-#### Seikkailijoiden hallinta
+#### 3. Seikkailijoiden hallinta
 ![Seikkailijoiden hallinta](/kuvat/seikkailijat.gif)
 
 Seikkailijat esitetään rinnakkain kortteina, joissa näkyvät kunkin seikkailijan keskeiset tiedot. Korttia klikkaamalla avautuu näkymä, jossa kyseisen seikkailijan tietoja voidaan muokata.
@@ -42,13 +42,11 @@ Seikkailijan voi myös poistaa eli irtisanoa ryhmästä.
 
 ---
 
-#### Kauppa
+#### 4. Kauppa
 
 ![Kauppa](/kuvat/kauppa.gif)
 Kauppanäkymä koostuu kahdesta sarakkeesta: vasemmalla pelaajan omistamat tavarat ja oikealla kaupan valikoima. Pelaajalla on käytössään rajallinen määrä kultaa, jolla tavaroita voidaan ostaa kaupasta. Pelaaja voi myös myydä omia tavaroitaan kaupalle.
 Ostetut tavarat ovat käytettävissä seikkailijoiden varusteita valittaessa. Tämä on mahdollista, koska pelaajan omistamat tavarat tallennetaan tietokantaan.
-
----
 
 ## 🛠️ Teknologiat
 
