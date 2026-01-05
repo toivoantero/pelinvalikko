@@ -15,7 +15,7 @@ Sovellus on julkaistu Render-palvelussa, ja ensilataus kestää minuutin tai par
 ## ✨ Toiminnallisuudet
 
 #### 1. Rekisteröityminen ja sisäänkirjautuminen
-![Kirjautuminen](/kuvat/logi.gif)
+![Kirjautuminen](/kuvat/login.gif)
 
 Sovellukseen kirjautuminen edellyttää pelaajatilin rekisteröimistä.
 Sovellus validoi käyttäjän syötteet ja antaa ilmoituksen yleisissä
@@ -25,7 +25,7 @@ käyttäjätunnuksen, tai jos käyttäjätunnus on väärä tai liian lyhyt.
 ---
 
 #### 2. Värvääminen
-![Värvääminen](/kuvat/varva.gif)
+![Värvääminen](/kuvat/varvaa.gif)
 
 Pelaajalla on hallussaan seikkailijoiden ryhmä, jota voi kasvattaa 
 värväämällä uusia seikkailijoita. Värvättävälle seikkailijalle valitaan
@@ -39,13 +39,13 @@ tämän rajan yli, sovellus antaa ilmoituksen.
 ---
 
 #### 3. Seikkailijoiden hallinta
-![Seikkailijoiden hallinta](/kuvat/seikkailij.gif)
+![Seikkailijoiden hallinta](/kuvat/seikkailijat.gif)
 
 Seikkailijat esitetään rinnakkain kortteina, joissa näkyvät kunkin
 seikkailijan keskeiset tiedot. Korttia klikkaamalla avautuu näkymä,
 jossa kyseisen seikkailijan tietoja voidaan muokata.
 
-![Seikkailijan hallinta](/kuvat/seikkailij.gif)
+![Seikkailijan hallinta](/kuvat/seikkailija.gif)
 
 Muokattavissa ovat seikkailijan nimi, ammatti ja ase. Valittavissa
 olevat aseet määräytyvät valitun ammatin perusteella. Jos muutokset
@@ -56,7 +56,7 @@ virheilmoituksen. Seikkailijan voi myös poistaa eli irtisanoa ryhmästä.
 
 #### 4. Kauppa
 
-![Kauppa](/kuvat/kaupp.gif)
+![Kauppa](/kuvat/kauppa.gif)
 
 Kauppanäkymä koostuu kahdesta sarakkeesta: vasemmalla pelaajan
 omistamat tavarat ja oikealla kaupan valikoima. Pelaajalla on
