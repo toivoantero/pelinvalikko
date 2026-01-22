@@ -82,6 +82,8 @@ tavarat tallennetaan tietokantaan.
 
 ```bash
 git clone https://github.com/toivoantero/pelinvalikko
+```
+```bash
 cd pelinvalikko
 ```
 ```bash
