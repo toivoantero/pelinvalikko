@@ -31,7 +31,7 @@ Pelaajalla on hallussaan seikkailijoiden ryhmä, jota voi kasvattaa
 värväämällä uusia seikkailijoita. Värvättävälle seikkailijalle valitaan
 ammatti valmiista listasta sekä ikä liukusäätimellä. Mikäli ammattia
 ei valita, sovellus näyttää virheilmoituksen. Seikkailijan nimi
-arvotaan REST API:n kautta (https://fantasyname.lukewh.com/).
+arvotaan REST API:n kautta (https://fantasyname.lukewh.com/).
 Kuva arvotaan valitun ammatin sekä satunnaisen sukupuolen perusteella.
 Ryhmän maksimikoko on kuusi seikkailijaa. Mikäli värväystä yritetään
 tämän rajan yli, sovellus antaa ilmoituksen.
