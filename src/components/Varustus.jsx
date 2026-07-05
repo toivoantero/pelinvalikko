@@ -11,8 +11,7 @@ function Varustus() {
     return (
         <Grid
             container
-            spacing={4}
-            sx={{ padding: 4, justifyContent: 'center' }}
+            sx={{ padding: "32px", justifyContent: 'center', gap: "32px" }}
         >
             {seikkailijat.map(objekti => {
                 let kuva = encodeURIComponent(objekti.kuva);
