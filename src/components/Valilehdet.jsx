@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { IconButton, Menu, MenuItem, ListItemText, Box, AppBar, Tabs, Tab, Typography, Button, } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { getPelaaja } from './pelidata';
+import { getPelaaja } from '../services/pelidata';
 
 function Valilehdet() {
   const [value, setValue] = useState(0);

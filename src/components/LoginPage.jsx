@@ -26,7 +26,7 @@ const LoginPage = () => {
     if (isLogin) {
       // Login
       try {
-        const response = await axios.post('/api/login', { username, password });
+        const response = await axios.post('/api/auth/login', { username, password });
         localStorage.setItem('token', response.data.token);
         navigate('/app');
       } catch (err) {

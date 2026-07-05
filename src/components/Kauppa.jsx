@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Stack, Paper, Box, Button, Typography } from '@mui/material';
-import { getVarusteet, updateVarusteet } from './pelidata';
+import { getVarusteet, updateVarusteet } from '../services/pelidata';
 
 function Kauppa() {
     const [varusteet, setVarusteet] = useState([]);
@@ -108,10 +108,7 @@ function Kauppa() {
         <Stack
             direction="row"
             spacing={{xs: 1, sm: 4}}
-            marginTop={2}
-            marginX="auto"
-            width="80vw"
-            justifyContent="center"
+            sx={{ marginTop: 2, marginX: "auto", width: "80vw", justifyContent: "center" }}
         >
             <VarusteLista
                 otsikko="Omat tavarat"

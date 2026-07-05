@@ -1,8 +1,8 @@
 import Valilehdet from './components/Valilehdet';
 import Varvaa/*, { LomakeAction } */from './components/Varvaa';
-import Varustus, { VarustusLoader } from './components/Varustus';
+import Varustus from './components/Varustus';
 import Kauppa from './components/Kauppa';
-import Identiteetti, { YksiloLoader, PoistoAction } from './components/Identiteetti';
+import Identiteetti from './components/Identiteetti';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -11,6 +11,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Paper } from '@mui/material';
 import { styled } from '@mui/system';
+import { VarustusLoader, YksiloLoader, PoistoAction } from './loaders/loaders';
 import './hahmovalikko.css';
 
 export const SeikkailijaContext = createContext();

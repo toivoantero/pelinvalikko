@@ -1,34 +1,15 @@
 import { useState } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, FormControl, Stack, CardMedia, Typography, Select, Box, TextField, Button, InputLabel, MenuItem } from '@mui/material';
 import { useParams } from 'react-router';
-import { getVarusteet, deleteSeikkailija, updateSeikkailija } from './pelidata';
-import { useLoaderData, Form, redirect } from 'react-router-dom';
+import { getVarusteet, deleteSeikkailija, updateSeikkailija } from '../services/pelidata';
+import { useLoaderData, Form } from 'react-router-dom';
 import { useNavigation } from "react-router-dom";
-
-export async function PoistoAction({ request }) {
-    const formData = await request.formData();
-    const id = formData.get("id");
-    const response = await deleteSeikkailija(id);
-    if (response.status === 400) {
-        throw Error(response.message);
-    }
-
-    return redirect('/app/varustus');
-}
-
-export async function YksiloLoader() {
-    let varusteetResponse = await getVarusteet();
-    if (varusteetResponse.status === 400) {
-        throw Error(varusteetResponse.message);
-    }
-    return { varusteetResponse };
-}
 
 function Identiteetti() {
     const navigation = useNavigation();
     const isSubmitting = navigation.state === "submitting";
-    const { varusteetResponse } = useLoaderData();
-    const varusteet = varusteetResponse.data;
+    const loaderData = useLoaderData();
+    const varusteet = loaderData?.varusteet || [];
     const [viesti, setViesti] = useState('');
     const [aseVirhe, setAseVirhe] = useState(false);
     const [dialogivalinta, setDialogivalinta] = useState('');
@@ -140,11 +121,14 @@ function Identiteetti() {
         <Stack
             className="custom-textfield"
             direction="row"
-            spacing={{xs: 0, sm: 4}}
-            marginTop={4}
-            marginX="auto"
-            width={{xs: "80vw", sm: "10vw"}}
-            justifyContent="center">
+            spacing={{ xs: 0, sm: 4 }}
+            sx={{
+                marginTop: 4,
+                marginX: "auto",
+                width: { xs: "80vw", sm: "10vw" },
+                justifyContent: "center"
+            }}
+        >
             <Box sx={{ background: "rgba(40,60,85,0)", textAlign: 'center', paddingTop: 2 }}>
                 {seikkailija.kuva ?
                     <CardMedia sx={{ height: 'auto', width: 200 }}
@@ -160,10 +144,13 @@ function Identiteetti() {
                 <Box
                     className="custom-textfield"
                     component='form'
-                    marginTop={2}
-                    marginX="auto"
-                    width={{xs: "40vw", lg: "25vw", xl: "20vw"}}
-                    justifyContent="center">
+                    sx={{
+                        marginTop: 2,
+                        marginX: "auto",
+                        width: { xs: "40vw", lg: "25vw", xl: "20vw" },
+                        justifyContent: "center"
+                    }}
+                >
 
                     <TextField
                         fullWidth

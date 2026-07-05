@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FormControl, Stack, CardMedia, Select, Slider, Box, TextField, Button, InputLabel, Typography, MenuItem } from '@mui/material';
 import { PaperOpaque } from '../App';
 import { Form } from 'react-router-dom';
-import { addSeikkailija, getSeikkailijat, getVarusteet, getNimet } from './pelidata';
+import { addSeikkailija, getSeikkailijat, getVarusteet, getNimet } from '../services/pelidata';
 
 function Varvaa() {
     const [kesken, setKesken] = useState(false);
@@ -140,8 +140,10 @@ function Varvaa() {
             // Tee testi sille, että jos nimet on haettu API:sta onnistuneesti
             if (nimet) {
                 valittuNimilista = nimet;
+                console.log("Nimet haettu API:sta:", valittuNimilista);
             } else {
                 valittuNimilista = paikallisetNimet;
+                console.log("Nimiä ei saatu API:sta, käytetään paikallisia nimiä:", valittuNimilista);
             }
             console.log("testi:" + Object.keys(valittuNimilista))
             do {
@@ -225,13 +227,11 @@ function Varvaa() {
             className="custom-textfield"
             direction="row"
             spacing={{ xs: 2, sm: 4 }}
-            marginTop={4}
-            marginX="auto"
-            width="80vw"
-            justifyContent="center">
+            sx={{ marginTop: 2, marginX: "auto", width: "80vw", justifyContent: "center" }}
+            >
             <Form onSubmit={handleSubmit} encType='multipart/form-data'>
                 <Box sx={{ width: { xs: '40vw', sm: '30vw' } }}>
-                    <Typography paddingTop={2} paddingBottom={4}>Valitse mitä ammattia haluat seikkailijasi<br></br>edustavan ja minkä ikäinen hän on.</Typography>
+                    <Typography sx={{ paddingTop: 2, paddingBottom: 4 }}>Valitse mitä ammattia haluat seikkailijasi<br></br>edustavan ja minkä ikäinen hän on.</Typography>
                     <FormControl fullWidth>
                         <InputLabel id="ammatti-label">Ammatti</InputLabel>
                         <Select
