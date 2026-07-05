@@ -1,25 +1,19 @@
-import { useState } from 'react';
+import React from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, FormControl, Stack, CardMedia, Typography, Select, Box, TextField, Button, InputLabel, MenuItem } from '@mui/material';
 import { useParams } from 'react-router';
-import { getVarusteet, deleteSeikkailija, updateSeikkailija } from '../services/pelidata';
 import { useLoaderData, Form } from 'react-router-dom';
 import { useNavigation } from "react-router-dom";
+import MessageRenderer from './MessageRenderer';
+import { useIdentiteettiLogic } from '../hooks/useIdentiteettiLogic';
 
 function Identiteetti() {
     const navigation = useNavigation();
     const isSubmitting = navigation.state === "submitting";
     const loaderData = useLoaderData();
     const varusteet = loaderData?.varusteet || [];
-    const [viesti, setViesti] = useState('');
-    const [aseVirhe, setAseVirhe] = useState(false);
-    const [dialogivalinta, setDialogivalinta] = useState('');
-    let strategiAseet = varusteet.filter(ase => ase.tyyppi == "Yhden käden" && ase.paino < 5 && ase.omistaja === 'pelaaja');
-    let tiedustelijaAseet = varusteet.filter(ase => ase.paino < 10 && ase.omistaja === 'pelaaja');
-    let ritariAseet = varusteet.filter(ase => ase.paino > 8 && ase.omistaja === 'pelaaja');
-
     let { id, nimi, ammatti, ika, kokemuspisteet, ase, kuva } = useParams();
 
-    const [seikkailija, setSeikkailija] = useState({
+    const initial = {
         id: id,
         nimi: nimi,
         ammatti: ammatti,
@@ -27,95 +21,24 @@ function Identiteetti() {
         ika: ika,
         ase: ase,
         kuva: kuva
-    });
-
-    const muutaTieto = (e) => {
-        const { name, value } = e.target;
-
-        setSeikkailija((prevSeikkailija) => {
-            let uusiAse = prevSeikkailija.ase;
-
-            if (name === 'ammatti') {
-                const sallitutAseet = value === "Strategi" ? strategiAseet.map(ase => ase.nimi) :
-                    value === "Tiedustelija" ? tiedustelijaAseet.map(ase => ase.nimi) :
-                        value === "Ritari" ? ritariAseet.map(ase => ase.nimi) : [];
-
-                if (!sallitutAseet.includes(prevSeikkailija.ase)) {
-                    uusiAse = '-';
-                }
-            }
-
-            return {
-                ...prevSeikkailija,
-                [name]: value,
-                ...(name === 'ammatti' && { ase: uusiAse })
-            };
-        });
     };
 
-    const paivitaSeikkailija = async () => {
-        if (seikkailija.ase === '-') {
-            setAseVirhe(true);
-            setViesti('Seikkailijalle on valittava ase.');
-            setDialogivalinta(
-                <DialogActions>
-                    <Button onClick={handleClose} autoFocus>Sulje</Button>
-                </DialogActions>
-            );
-            handleClickOpen();
-            return;
-        }
-
-        try {
-            const response = await updateSeikkailija(seikkailija.id, seikkailija);
-            if (response.status === 200) {
-                setAseVirhe(false);
-                setViesti('Seikkailijan tiedot ovat nyt muutetut');
-                setDialogivalinta(
-                    <DialogActions>
-                        <Button onClick={handleClose} autoFocus>Sulje</Button>
-                    </DialogActions>
-                );
-                handleClickOpen();
-            } else {
-                alert('Päivitys epäonnistui: ' + response.message);
-            }
-        } catch (error) {
-            console.error('Virhe päivitettäessä tietokantaa:', error);
-        }
-    };
-
-    const poistaSeikkailija = async () => {
-        setViesti('Irtisanotaanko seikkailija?');
-        setDialogivalinta(
-            <DialogActions>
-                <Form style={{ width: '100%' }} action='/app/poisto' method='post'>
-                    <input type='hidden' name='id' value={seikkailija.id} />
-                    <Button style={{ margin: '0 30px' }} type='submit' color="tertiary" variant='outlined' disabled={isSubmitting}>{isSubmitting ? "Irtisanotaan..." : "Irtisano"}</Button>
-                    <Button
-                        style={{ float: 'right', margin: '0 30px' }}
-                        type='reset'
-                        onClick={handleClose}
-                        color="tertiary"
-                        variant='outlined'
-                        autoFocus>
-                        Peru
-                    </Button>
-                </Form>
-            </DialogActions>
-        );
-        handleClickOpen();
-    };
-
-    const [open, setOpen] = useState(false);
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
+    const {
+        seikkailija,
+        setSeikkailija,
+        aseVirhe,
+        setAseVirhe,
+        viesti,
+        dialogivalinta,
+        open,
+        handleClose,
+        muutaTieto,
+        paivitaSeikkailija,
+        poistaSeikkailija,
+        strategiAseet,
+        tiedustelijaAseet,
+        ritariAseet
+    } = useIdentiteettiLogic({ initialSeikkailija: initial, varusteet });
 
     return (
         <Stack
@@ -221,7 +144,7 @@ function Identiteetti() {
                 </Box>
 
                 <Box>
-                    <Button sx={{ marginTop: 4 }} color="primary" variant='outlined' onClick={poistaSeikkailija}>Irtisano seikkailija pois ryhmästä</Button>
+                    <Button sx={{ marginTop: 4 }} color="primary" variant='outlined' onClick={() => poistaSeikkailija(seikkailija.id)}>Irtisano seikkailija pois ryhmästä</Button>
                 </Box>
 
                 <Dialog
@@ -232,10 +155,30 @@ function Identiteetti() {
                 >
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            {viesti}
+                            <MessageRenderer viesti={viesti} />
                         </DialogContentText>
                     </DialogContent>
-                    {dialogivalinta}
+                    {dialogivalinta && dialogivalinta.type === 'confirmDelete' ? (
+                        <DialogActions>
+                            <Form style={{ width: '100%' }} action='/app/poisto' method='post' onSubmit={handleClose}>
+                                <input type='hidden' name='id' value={dialogivalinta.id} />
+                                <Button style={{ margin: '0 30px' }} type='submit' color="tertiary" variant='outlined' disabled={isSubmitting} onClick={handleClose}>{isSubmitting ? "Irtisanotaan..." : "Irtisano"}</Button>
+                                <Button
+                                    style={{ float: 'right', margin: '0 30px' }}
+                                    type='reset'
+                                    onClick={handleClose}
+                                    color="tertiary"
+                                    variant='outlined'
+                                    autoFocus>
+                                    Peru
+                                </Button>
+                            </Form>
+                        </DialogActions>
+                    ) : dialogivalinta && dialogivalinta.type === 'close' ? (
+                        <DialogActions>
+                            <Button onClick={handleClose} autoFocus>Sulje</Button>
+                        </DialogActions>
+                    ) : null}
                 </Dialog>
             </Stack>
         </Stack>

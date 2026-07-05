@@ -1,25 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Stack, Paper, Box, Button, Typography } from '@mui/material';
-import { getVarusteet, updateVarusteet } from '../services/pelidata';
+import { updateVarusteet } from '../services/pelidata';
+import { useVarusteet } from '../hooks/useVarusteet';
 
 function Kauppa() {
-    const [varusteet, setVarusteet] = useState([]);
+    const { varusteet, setVarusteet, loading, error, reloadVarusteet } = useVarusteet();
     const [valittuVaruste, setValittuVaruste] = useState(null);
     const [rahat, setRahat] = useState(1000);
-
-    const fetchData = async () => {
-        try {
-            const response = await getVarusteet();
-            const kaikkiVarusteet = response.data;
-            setVarusteet(kaikkiVarusteet);
-        } catch (error) {
-            console.error("Virhe haettaessa varusteita:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     const paivitaVarusteet = async () => {
         try {
@@ -36,7 +23,7 @@ function Kauppa() {
                 const response = await updateVarusteet(uusiVaruste.id, uusiVaruste);
                 if (response.status === 200) {
                     console.log('Päivitys onnistui:', response.data);
-                    fetchData();
+                    reloadVarusteet();
                 } else {
                     alert('Päivitys epäonnistui: ' + response.message);
                 }

@@ -35,7 +35,7 @@ const LoginPage = () => {
     } else {
       // Register
       try {
-        const response = await axios.post('/api/register', { username, password });
+        const response = await axios.post('/api/auth/register', { username, password });
         setViesti('Rekisteröytyminen onnistui, nyt voit kirjautua.');
         setDialogivalinta(
           <DialogActions>

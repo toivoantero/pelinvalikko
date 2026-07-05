@@ -1,28 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { IconButton, Menu, MenuItem, ListItemText, Box, AppBar, Tabs, Tab, Typography, Button, } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { getPelaaja } from '../services/pelidata';
 
 function Valilehdet() {
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
-  const [pelaaja, setPelaaja] = useState([]);
-
-  const fetchData = async () => {
-    try {
-      const [pelaajaResponse] = await Promise.all([getPelaaja()]);
-      if (pelaajaResponse.status === 400) {
-        throw new Error(pelaajaResponse.message);
-      }
-      setPelaaja(pelaajaResponse.data);
-    } catch (error) {
-      console.error("Virhe haettaessa käyttäjiä:", error);
-    }
-  }
-
-  useEffect(() => { fetchData() }, []);
-
 
   const handleChange = (e, val) => {
     setValue(val);
@@ -36,10 +19,6 @@ function Valilehdet() {
 
   const menuKiinni = () => {
     setMenuAuki(null);
-  }
-
-  const ilmoitus = () => {
-    alert('Tämä toiminto ei ole vielä toimintakunnossa. Tällä hetkellä sovelluksen toimivat osat ovat: (1) Sisäänkirjautuminen, (2) Värvääminen, (3) Seikkailijoiden tietojen tarkastelu. Toimimattomia osia ovat: (4) Värvättyjen seikkailijoiden tietojen muuttaminen, (5) Kauppa.');
   }
 
   const uusiPeli = () => {
