@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { useLoaderData, Form } from 'react-router-dom';
 import { useNavigation } from "react-router-dom";
 import ViestiNakyma from './ViestiNakyma';
-import { useIdentiteettiLogic } from '../hooks/useIdentiteettiLogic';
+import { useIdentiteettiLogiikka } from '../hooks/useIdentiteettiLogiikka';
 
 function Identiteetti() {
     const navigation = useNavigation();
@@ -38,7 +38,7 @@ function Identiteetti() {
         strategiAseet,
         tiedustelijaAseet,
         ritariAseet
-    } = useIdentiteettiLogic({ initialSeikkailija: initial, varusteet });
+    } = useIdentiteettiLogiikka({ initialSeikkailija: initial, varusteet });
 
     return (
         <Stack

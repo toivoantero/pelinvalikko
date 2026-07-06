@@ -2,7 +2,7 @@ import { FormControl, Stack, CardMedia, Select, Slider, Box, TextField, Button, 
 import { PaperOpaque } from '../App';
 import { Form } from 'react-router-dom';
 import { useVarvaaData } from '../hooks/useVarvaaData';
-import { useVarvaaLogic } from '../hooks/useVarvaaLogic';
+import { useVarvaaLogiikka } from '../hooks/useVarvaaLogiikka';
 import ViestiNakyma from './ViestiNakyma';
 
 function Varvaa() {
@@ -18,7 +18,7 @@ function Varvaa() {
       varvaaSeikkailija,
       kasitteleKentanMuutos,
       merkitseLisatyksi,
-    } = useVarvaaLogic({ aseet, seikkailijat, nimet, setSeikkailijat });
+    } = useVarvaaLogiikka({ aseet, seikkailijat, nimet, setSeikkailijat });
 
     if (ladataan) {
       return <Typography sx={{ color: 'white', textAlign: 'center', marginTop: 4 }}>Ladataan...</Typography>;

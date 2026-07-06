@@ -16,7 +16,7 @@ const paikallisetNimet = {
     neutraali: ['Oni', 'Kide', 'Ashley', 'Robin', 'Squall', 'Skylar'],
 };
 
-export function useVarvaaLogic({ aseet, seikkailijat, nimet, setSeikkailijat }) {
+export function useVarvaaLogiikka({ aseet, seikkailijat, nimet, setSeikkailijat }) {
     const [seikkailija, setSeikkailija] = useState(initialSeikkailija);
     const [toimintoKesken, setToimintoKesken] = useState(false);
     const [viesti, setViesti] = useState(null);
