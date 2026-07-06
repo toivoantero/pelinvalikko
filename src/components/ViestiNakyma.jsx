@@ -1,24 +1,24 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 
-export default function MessageRenderer({ viesti }) {
+export default function ViestiNakyma({ viesti }) {
     if (!viesti) return null;
 
-    const kind = viesti.kind || 'text';
+    const tyyppi = viesti.tyyppi || 'teksti';
 
-    if (kind === 'text') {
+    if (tyyppi === 'teksti') {
         return (
             <Typography sx={viesti.style || { color: '#FFCC33' }}>
-                {viesti.text}
+                {viesti.teksti}
             </Typography>
         );
     }
 
-    if (kind === 'welcome') {
+    if (tyyppi === 'tervetuloa') {
         const data = viesti.data || {};
         return (
             <Box>
-                <Typography sx={viesti.style || { color: '#FFCC33' }}>{viesti.text}</Typography>
+                <Typography sx={viesti.style || { color: '#FFCC33' }}>{viesti.teksti}</Typography>
                 <Box sx={{ color: 'white', mt: 1 }}>
                     <Typography sx={{ fontSize: { xs: 'small', sm: 'initial' } }}>Nimi: {data.nimi}</Typography>
                     <Typography sx={{ fontSize: { xs: 'small', sm: 'initial' } }}>Ammatti: {data.ammatti}</Typography>
@@ -29,6 +29,5 @@ export default function MessageRenderer({ viesti }) {
         );
     }
 
-    // fallback
     return null;
 }

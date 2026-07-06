@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Stack, Paper, Box, Button, Typography } from '@mui/material';
-import { updateVarusteet } from '../services/pelidata';
+import { paivitaVarusteet } from '../services/pelidata';
 import { useVarusteet } from '../hooks/useVarusteet';
 
 function Kauppa() {
-    const { varusteet, setVarusteet, loading, error, reloadVarusteet } = useVarusteet();
+    const { varusteet, setVarusteet, ladataan, virhe, haeUudelleenVarusteet } = useVarusteet();
     const [valittuVaruste, setValittuVaruste] = useState(null);
     const [rahat, setRahat] = useState(1000);
 
-    const paivitaVarusteet = async () => {
+    const vaihdaVarusteenOmistaja = async () => {
         try {
             if (valittuVaruste) {
                 let uusiVaruste;
@@ -20,10 +20,10 @@ function Kauppa() {
                 setVarusteet(prevVarusteet =>
                     prevVarusteet.map(v => v.id === uusiVaruste.id ? uusiVaruste : v)
                 );
-                const response = await updateVarusteet(uusiVaruste.id, uusiVaruste);
+                const response = await paivitaVarusteet(uusiVaruste.id, uusiVaruste);
                 if (response.status === 200) {
                     console.log('Päivitys onnistui:', response.data);
-                    reloadVarusteet();
+                    haeUudelleenVarusteet();
                 } else {
                     alert('Päivitys epäonnistui: ' + response.message);
                 }
@@ -44,9 +44,9 @@ function Kauppa() {
         }
     };
 
-    const vaihto = () => {
+    const teeKauppa = () => {
         const hinta = Number(valittuVaruste.hinta);
-        paivitaVarusteet();
+        vaihdaVarusteenOmistaja();
         if (valittuVaruste.omistaja === 'kauppa') {
             setRahat(prevRahat => Number(prevRahat) - hinta);
         } else if (valittuVaruste.omistaja === 'pelaaja') {
@@ -111,7 +111,7 @@ function Kauppa() {
                     justifyContent: "center",
                 }}>
                 <Typography padding="0 0 30px 0">{rahat} kultaa</Typography>
-                <Button variant='outlined' onClick={vaihto}>osta
+                <Button variant='outlined' onClick={teeKauppa}>osta
                     <br />&#9664; &#9654;<br />myy 
                 </Button>
             </Box>

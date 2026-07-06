@@ -3,7 +3,7 @@ import { Dialog, DialogActions, DialogContent, DialogContentText, FormControl, S
 import { useParams } from 'react-router';
 import { useLoaderData, Form } from 'react-router-dom';
 import { useNavigation } from "react-router-dom";
-import MessageRenderer from './MessageRenderer';
+import ViestiNakyma from './ViestiNakyma';
 import { useIdentiteettiLogic } from '../hooks/useIdentiteettiLogic';
 
 function Identiteetti() {
@@ -30,11 +30,11 @@ function Identiteetti() {
         setAseVirhe,
         viesti,
         dialogivalinta,
-        open,
-        handleClose,
-        muutaTieto,
-        paivitaSeikkailija,
-        poistaSeikkailija,
+        dialogiAuki,
+        suljeDialogi,
+        kasitteleKentanMuutos,
+        tallennaMuutokset,
+        vahvistaSeikkailijanPoisto,
         strategiAseet,
         tiedustelijaAseet,
         ritariAseet
@@ -80,7 +80,7 @@ function Identiteetti() {
                         name='nimi'
                         label='Nimi'
                         value={seikkailija.nimi}
-                        onChange={muutaTieto}
+                        onChange={kasitteleKentanMuutos}
                     />
 
                     <FormControl fullWidth>
@@ -91,9 +91,9 @@ function Identiteetti() {
                             label="Ammatti"
                             name='ammatti'
                             value={seikkailija.ammatti}
-                            onChange={muutaTieto}
+                            onChange={kasitteleKentanMuutos}
                             MenuProps={{
-                                PaperProps: {
+                                paperprops: {
                                     sx: { backgroundColor: '#6b7a8a', color: 'white' }
                                 }
                             }}
@@ -113,11 +113,11 @@ function Identiteetti() {
                             name='ase'
                             value={seikkailija.ase || ''}
                             onChange={(e) => {
-                                muutaTieto(e);
+                                kasitteleKentanMuutos(e);
                                 setAseVirhe(false);
                             }}
                             MenuProps={{
-                                PaperProps: {
+                                paperprops: {
                                     sx: { backgroundColor: '#6b7a8a', color: 'white' }
                                 }
                             }}
@@ -140,33 +140,33 @@ function Identiteetti() {
                             ))}
                         </Select>
                     </FormControl>
-                    <Button color="secondary" variant='outlined' onClick={paivitaSeikkailija}>Vahvista muutos</Button>
+                    <Button color="secondary" variant='outlined' onClick={tallennaMuutokset}>Vahvista muutos</Button>
                 </Box>
 
                 <Box>
-                    <Button sx={{ marginTop: 4 }} color="primary" variant='outlined' onClick={() => poistaSeikkailija(seikkailija.id)}>Irtisano seikkailija pois ryhmästä</Button>
+                    <Button sx={{ marginTop: 4 }} color="primary" variant='outlined' onClick={() => vahvistaSeikkailijanPoisto(seikkailija.id)}>Irtisano seikkailija pois ryhmästä</Button>
                 </Box>
 
                 <Dialog
-                    open={open}
-                    onClose={handleClose}
+                    open={dialogiAuki}
+                    onClose={suljeDialogi}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
                     <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            <MessageRenderer viesti={viesti} />
+                        <DialogContentText id="alert-dialog-description" component="div">
+                            <ViestiNakyma viesti={viesti} />
                         </DialogContentText>
                     </DialogContent>
                     {dialogivalinta && dialogivalinta.type === 'confirmDelete' ? (
                         <DialogActions>
-                            <Form style={{ width: '100%' }} action='/app/poisto' method='post' onSubmit={handleClose}>
+                            <Form style={{ width: '100%' }} action='/app/poisto' method='post' onSubmit={suljeDialogi}>
                                 <input type='hidden' name='id' value={dialogivalinta.id} />
-                                <Button style={{ margin: '0 30px' }} type='submit' color="tertiary" variant='outlined' disabled={isSubmitting} onClick={handleClose}>{isSubmitting ? "Irtisanotaan..." : "Irtisano"}</Button>
+                                <Button style={{ margin: '0 30px' }} type='submit' color="tertiary" variant='outlined' disabled={isSubmitting} onClick={suljeDialogi}>{isSubmitting ? "Irtisanotaan..." : "Irtisano"}</Button>
                                 <Button
                                     style={{ float: 'right', margin: '0 30px' }}
                                     type='reset'
-                                    onClick={handleClose}
+                                    onClick={suljeDialogi}
                                     color="tertiary"
                                     variant='outlined'
                                     autoFocus>
@@ -176,7 +176,7 @@ function Identiteetti() {
                         </DialogActions>
                     ) : dialogivalinta && dialogivalinta.type === 'close' ? (
                         <DialogActions>
-                            <Button onClick={handleClose} autoFocus>Sulje</Button>
+                            <Button onClick={suljeDialogi} autoFocus>Sulje</Button>
                         </DialogActions>
                     ) : null}
                 </Dialog>

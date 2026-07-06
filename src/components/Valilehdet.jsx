@@ -7,7 +7,7 @@ function Valilehdet() {
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
 
-  const handleChange = (e, val) => {
+  const kasitteleMuutos = (e, val) => {
     setValue(val);
   }
 
@@ -41,7 +41,7 @@ function Valilehdet() {
           </MenuItem>
         </Menu>
 
-        <Tabs value={value} onChange={handleChange}
+        <Tabs value={value} onChange={kasitteleMuutos}
           variant='fullWidth' centered textColor='inherit'
           sx={{ flexGrow: 1 }}>
           <Tab component={Link} to='varvaa' label='Värvää' />

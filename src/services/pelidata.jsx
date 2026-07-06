@@ -15,7 +15,7 @@ const tunnisteAsetukset = () => {
   return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 };
 
-export const getSeikkailijat = async () => {
+export const haeSeikkailijat = async () => {
   try {
     const response = await axios.get(palvelinSeikkailijat + 'all', tunnisteAsetukset());
     return ({ status: response.status, data: response.data });
@@ -24,7 +24,7 @@ export const getSeikkailijat = async () => {
   }
 }
 
-export const getPelaaja = async () => {
+export const haePelaaja = async () => {
   try {
     const response = await axios.get(palvelinPelaaja + 'all', tunnisteAsetukset());
     return ({ status: response.status, data: response.data });
@@ -33,7 +33,7 @@ export const getPelaaja = async () => {
   }
 }
 
-export const addSeikkailija = async (seikkailija) => {
+export const lisaaSeikkailija = async (seikkailija) => {
   try {
     const response = await axios.post(palvelinSeikkailijat + 'add', seikkailija, tunnisteAsetukset());
     return { status: response.status, data: response.data };
@@ -43,7 +43,7 @@ export const addSeikkailija = async (seikkailija) => {
   }
 }
 
-export const deleteSeikkailija = async (id) => {
+export const poistaSeikkailija = async (id) => {
   try {
     const response = await axios.delete(palvelinSeikkailijat + 'delete/' + id, tunnisteAsetukset());
     return ({ status: response.status, data: response.data });
@@ -52,7 +52,7 @@ export const deleteSeikkailija = async (id) => {
   }
 }
 
-export const updateSeikkailija = async (id, data) => {
+export const paivitaSeikkailija = async (id, data) => {
   try {
     const response = await axios.put(palvelinSeikkailijat + 'update/' + id, data, tunnisteAsetukset());
     return ({ status: response.status, data: response.data });
@@ -61,7 +61,7 @@ export const updateSeikkailija = async (id, data) => {
   }
 }
 
-export const getVarusteet = async () => {
+export const haeVarusteet = async () => {
   try {
     const response = await axios.get(palvelinVarusteet + 'all', tunnisteAsetukset());
     return response;
@@ -71,7 +71,7 @@ export const getVarusteet = async () => {
   }
 };
 
-export const getNimet = async () => {
+export const haeNimet = async () => {
   try {
     const response = await axios.get(palvelinNimet);
     return response.data;
@@ -81,7 +81,7 @@ export const getNimet = async () => {
   }
 };
 
-export const updateVarusteet = async (id, data) => {
+export const paivitaVarusteet = async (id, data) => {
   try {
     const response = await axios.put(palvelinVarusteet + 'update/' + id, data, tunnisteAsetukset());
     return ({ status: response.status, data: response.data });

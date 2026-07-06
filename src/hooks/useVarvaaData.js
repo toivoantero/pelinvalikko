@@ -1,22 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getVarusteet, getSeikkailijat, getNimet } from '../services/pelidata';
+import { haeVarusteet, haeSeikkailijat, haeNimet } from '../services/pelidata';
 
 export function useVarvaaData() {
   const [aseet, setAseet] = useState([]);
   const [seikkailijat, setSeikkailijat] = useState([]);
   const [nimet, setNimet] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [ladataan, setLadataan] = useState(true);
+  const [virhe, setVirhe] = useState(null);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const haeData = useCallback(async () => {
+    setLadataan(true);
+    setVirhe(null);
 
     try {
       const [aseetResponse, seikkailijatResponse, nimetResponse] = await Promise.all([
-        getVarusteet(),
-        getSeikkailijat(),
-        getNimet(),
+        haeVarusteet(),
+        haeSeikkailijat(),
+        haeNimet(),
       ]);
 
       if (aseetResponse.status === 400) {
@@ -31,18 +31,18 @@ export function useVarvaaData() {
       setNimet({ nainen: [nimetResponse.nainen], mies: [nimetResponse.mies] });
     } catch (err) {
       console.error('Virhe haettaessa aseita tai seikkailijaa:', err);
-      setError(err);
+      setVirhe(err);
       setAseet([]);
       setSeikkailijat([]);
       setNimet({});
     } finally {
-      setLoading(false);
+      setLadataan(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    haeData();
+  }, [haeData]);
 
-  return { aseet, seikkailijat, nimet, loading, error, fetchData, setAseet, setSeikkailijat, setNimet };
+  return { aseet, seikkailijat, nimet, ladataan, virhe, haeData, setAseet, setSeikkailijat, setNimet };
 }

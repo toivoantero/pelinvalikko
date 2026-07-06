@@ -3,61 +3,61 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogActions, DialogContent, DialogContentText, Button } from '@mui/material';
 
-const LoginPage = () => {
-  const [isLogin, setIsLogin] = useState(true); // State to toggle between login and register
+const Kirjautuminen = () => {
+  const [kirjaudutaan, setKirjaudutaan] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState([]);
+  const [virheet, setVirheet] = useState([]);
   const [viesti, setViesti] = useState('');
-  const [dialogivalinta, setDialogivalinta] = useState('');
+  const [dialoginToiminnot, setDialoginToiminnot] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     localStorage.removeItem('token');
   }, []);
 
-  const handleSubmit = async (e) => {
+  const kasitteleLahetys = async (e) => {
     e.preventDefault();
-    setError([]);
+    setVirheet([]);
     if (username.length < 4 || password.length < 4) {
-      setError(['Nimen ja salasanan on oltava', 'vähintään neljä merkkiä pitkä.']);
+      setVirheet(['Nimen ja salasanan on oltava', 'vähintään neljä merkkiä pitkä.']);
       return;
     }
-    if (isLogin) {
+    if (kirjaudutaan) {
       // Login
       try {
         const response = await axios.post('/api/auth/login', { username, password });
         localStorage.setItem('token', response.data.token);
         navigate('/app');
       } catch (err) {
-        setError(['Väärä nimi tai salasana.']);
+        setVirheet(['Väärä nimi tai salasana.']);
       }
     } else {
       // Register
       try {
         const response = await axios.post('/api/auth/register', { username, password });
         setViesti('Rekisteröytyminen onnistui, nyt voit kirjautua.');
-        setDialogivalinta(
+        setDialoginToiminnot(
           <DialogActions>
-            <Button onClick={handleClose} autoFocus>Sulje</Button>
+            <Button onClick={suljeDialogi} autoFocus>Sulje</Button>
           </DialogActions>
         );
-        handleClickOpen();
-        setIsLogin(true);
+        avaaDialogi();
+        setKirjaudutaan(true);
       } catch (err) {
-        setError(['Rekisteröityminen epäonnistui.', 'Käyttäjänimi voi olla jo olemassa.']);
+        setVirheet(['Rekisteröityminen epäonnistui.', 'Käyttäjänimi voi olla jo olemassa.']);
       }
     }
   };
 
-  const [open, setOpen] = useState(false);
+  const [dialogiAuki, setDialogiAuki] = useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const avaaDialogi = () => {
+    setDialogiAuki(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const suljeDialogi = () => {
+    setDialogiAuki(false);
   };
 
   return (
@@ -70,8 +70,8 @@ const LoginPage = () => {
       height: '90vh',
     }}>
       <div>
-        <h2>{isLogin ? 'Sisäänkirjautuminen' : 'Rekisteröityminen'}</h2>
-        <form style={{ marginTop: '30px', width: '280px' }} onSubmit={handleSubmit}>
+        <h2>{kirjaudutaan ? 'Sisäänkirjautuminen' : 'Rekisteröityminen'}</h2>
+        <form style={{ marginTop: '30px', width: '280px' }} onSubmit={kasitteleLahetys}>
           <div style={{ display: 'flex', flexDirection: 'row' }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <label style={{ margin: '0 8px 8px 0', textAlign: 'right', height: '20px' }}>Nimi</label>
@@ -92,14 +92,14 @@ const LoginPage = () => {
               />
             </div>
           </div>
-          <Button fullWidth type='submit' sx={{ margin: '30px 0 15px 0' }} variant='outlined' color="secondary">{isLogin ? 'Kirjaudu sisään' : 'Rekisteröidy'}</Button>
+          <Button fullWidth type='submit' sx={{ margin: '30px 0 15px 0' }} variant='outlined' color="secondary">{kirjaudutaan ? 'Kirjaudu sisään' : 'Rekisteröidy'}</Button>
         </form>
-        <Button fullWidth variant='outlined' color="primary" onClick={() => setIsLogin(!isLogin)}>
-          {isLogin ? 'Tarvitsetko rekisteröitymistä?' : 'Käyttäjätili jo tehtynä?'}
+        <Button fullWidth variant='outlined' color="primary" onClick={() => setKirjaudutaan(!kirjaudutaan)}>
+          {kirjaudutaan ? 'Tarvitsetko rekisteröitymistä?' : 'Käyttäjätili jo tehtynä?'}
         </Button>
-        {error.length > 0
+        {virheet.length > 0
           ? (<p style={{ color: 'white', height: '20px' }}>
-            {error.map((line, index) => (
+            {virheet.map((line, index) => (
               <span key={index}>
                 {line}
                 <br />
@@ -110,8 +110,8 @@ const LoginPage = () => {
           <p style={{ height: '20px' }}></p>}
       </div>
       <Dialog
-        open={open}
-        onClose={handleClose}
+        open={dialogiAuki}
+        onClose={suljeDialogi}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -120,10 +120,10 @@ const LoginPage = () => {
             {viesti}
           </DialogContentText>
         </DialogContent>
-        {dialogivalinta}
+        {dialoginToiminnot}
       </Dialog>
     </div>
   );
 };
 
-export default LoginPage;
+export default Kirjautuminen;

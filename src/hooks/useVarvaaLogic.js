@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { addSeikkailija } from '../services/pelidata';
+import { lisaaSeikkailija } from '../services/pelidata';
 
 const initialSeikkailija = {
     nimi: '',
@@ -18,15 +18,12 @@ const paikallisetNimet = {
 
 export function useVarvaaLogic({ aseet, seikkailijat, nimet, setSeikkailijat }) {
     const [seikkailija, setSeikkailija] = useState(initialSeikkailija);
-    const [kesken, setKesken] = useState(false);
-    // `viesti` is a descriptor object set by the hook. Examples:
-    // { kind: 'text', text: '...', style: { ... } }
-    // { kind: 'welcome', text: 'Tervetuloa...', data: { nimi, ammatti, ika, taso } }
+    const [toimintoKesken, setToimintoKesken] = useState(false);
     const [viesti, setViesti] = useState(null);
-    const [kuvakytkin, setKuvakytkin] = useState(true);
+    const [naytaKuva, setNaytaKuva] = useState(true);
     const [lisatty, setLisatty] = useState([{ kuva: 'tyhjaseikkailija.png' }]);
 
-    const valintaAse = () => {
+    const arvoAse = () => {
         if (!seikkailija.ammatti) return '';
         if (aseet.length === 0) return '';
 
@@ -47,7 +44,7 @@ export function useVarvaaLogic({ aseet, seikkailijat, nimet, setSeikkailijat }) 
         return '';
     };
 
-    const valintaNimiJaSukupuoli = () => {
+    const arvoNimiJaSukupuoli = () => {
         let arvottuNimiJaSukupuoli = {};
         let valittuNimilista = nimet && nimet.nainen && nimet.mies ? nimet : paikallisetNimet;
 
@@ -71,7 +68,7 @@ export function useVarvaaLogic({ aseet, seikkailijat, nimet, setSeikkailijat }) 
         return arvottuNimiJaSukupuoli;
     };
 
-    const valintaKuva = (henkilo) => {
+    const maaritaKuva = (henkilo) => {
         const arvottuLuku = Math.floor(Math.random() * 2);
         if (seikkailija.ammatti === 'Strategi') {
             if (henkilo.sukupuoli === 'neutraali') {
@@ -96,19 +93,19 @@ export function useVarvaaLogic({ aseet, seikkailijat, nimet, setSeikkailijat }) 
 
     const taydennaSeikkailija = () => {
         if (!seikkailija.ammatti) return;
-        const henkilo = valintaNimiJaSukupuoli();
-        const kuva = valintaKuva(henkilo);
-        const ase = valintaAse();
+        const henkilo = arvoNimiJaSukupuoli();
+        const kuva = maaritaKuva(henkilo);
+        const ase = arvoAse();
 
         setSeikkailija(prev => ({ ...prev, nimi: henkilo.nimi, ase, kuva }));
     };
 
-    const lisaaSeikkailija = async () => {
+    const varvaaSeikkailija = async () => {
         if (seikkailijat.length >= 6) {
-            setKuvakytkin(false);
+            setNaytaKuva(false);
             setViesti({
-                kind: 'text',
-                text: 'Seikkailijoiden ryhmään\nei mahdu enempää, kuin 6.',
+                tyyppi: 'teksti',
+                teksti: 'Seikkailijoiden ryhmään\nei mahdu enempää, kuin 6.',
                 style: {
                     position: 'relative',
                     color: "#FFCC33",
@@ -123,10 +120,10 @@ export function useVarvaaLogic({ aseet, seikkailijat, nimet, setSeikkailijat }) 
         }
 
         if (!seikkailija.ammatti.trim()) {
-            setKuvakytkin(false);
+            setNaytaKuva(false);
             setViesti({
-                kind: 'text',
-                text: 'Valitse värvättävän\nseikkailijan ammatti.',
+                tyyppi: 'teksti',
+                teksti: 'Valitse värvättävän\nseikkailijan ammatti.',
                 style: {
                     position: 'relative',
                     color: '#FFCC33',
@@ -141,12 +138,12 @@ export function useVarvaaLogic({ aseet, seikkailijat, nimet, setSeikkailijat }) 
         }
 
         try {
-            const response = await addSeikkailija(seikkailija);
+            const response = await lisaaSeikkailija(seikkailija);
             if (response.status === 200) {
-                setKuvakytkin(true);
+                setNaytaKuva(true);
                 setViesti({
-                    kind: 'welcome',
-                    text: 'Tervetuloa ryhmään!',
+                    tyyppi: 'tervetuloa',
+                    teksti: 'Tervetuloa ryhmään!',
                     data: {
                         nimi: seikkailija.nimi,
                         ammatti: seikkailija.ammatti,
@@ -158,44 +155,44 @@ export function useVarvaaLogic({ aseet, seikkailijat, nimet, setSeikkailijat }) 
                 setSeikkailijat([...seikkailijat, seikkailija]);
                 setSeikkailija({ ...seikkailija, nimi: '', ammatti: '', ika: 30, kokemuspisteet: 1.74, ase: '', kuva: '' });
             } else {
-                setViesti({ kind: 'text', text: 'Seikkailijan värvääminen\nepäonnistui.', style: { color: '#FF3333' } });
+                setViesti({ tyyppi: 'teksti', teksti: 'Seikkailijan värvääminen\nepäonnistui.', style: { color: '#FF3333' } });
             }
         } catch (error) {
             console.error('Virhe lisäyksessä:', error);
-            setViesti({ kind: 'text', text: 'Virhe lisäyksessä.\nYritä uudelleen.', style: { color: '#FF3333' } });
+            setViesti({ tyyppi: 'teksti', teksti: 'Virhe lisäyksessä.\nYritä uudelleen.', style: { color: '#FF3333' } });
         }
     };
 
-    const valintaIkaAmmatti = (e) => {
+    const kasitteleKentanMuutos = (e) => {
         const { name, value } = e.target;
         setSeikkailija(prev => ({ ...prev, [name]: value }));
         setViesti(null);
     };
 
-    const lisattyVarastoon = () => {
+    const merkitseLisatyksi = () => {
         setLisatty([{ nimi: seikkailija.nimi, kuva: seikkailija.kuva || 'tyhjaseikkailija.png' }]);
     };
 
     useEffect(() => {
-        setKuvakytkin(true);
+        setNaytaKuva(true);
     }, []);
 
     useEffect(() => {
         if (!seikkailija.ammatti) return;
         taydennaSeikkailija();
-        setKuvakytkin(true);
+        setNaytaKuva(true);
     }, [seikkailija.ammatti]);
 
     return {
         seikkailija,
         setSeikkailija,
-        kesken,
-        setKesken,
+        toimintoKesken,
+        setToimintoKesken,
         viesti,
-        kuvakytkin,
+        naytaKuva,
         lisatty,
-        lisaaSeikkailija,
-        valintaIkaAmmatti,
-        lisattyVarastoon,
+        varvaaSeikkailija,
+        kasitteleKentanMuutos,
+        merkitseLisatyksi,
     };
 }

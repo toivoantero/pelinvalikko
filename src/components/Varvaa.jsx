@@ -3,39 +3,39 @@ import { PaperOpaque } from '../App';
 import { Form } from 'react-router-dom';
 import { useVarvaaData } from '../hooks/useVarvaaData';
 import { useVarvaaLogic } from '../hooks/useVarvaaLogic';
-import MessageRenderer from './MessageRenderer';
+import ViestiNakyma from './ViestiNakyma';
 
 function Varvaa() {
-    const { aseet, seikkailijat, nimet, loading, error, setSeikkailijat } = useVarvaaData();
+    const { aseet, seikkailijat, nimet, ladataan, virhe, setSeikkailijat } = useVarvaaData();
     const {
       seikkailija,
       setSeikkailija,
-      kesken,
-      setKesken,
+      toimintoKesken,
+      setToimintoKesken,
       viesti,
-      kuvakytkin,
+      naytaKuva,
       lisatty,
-      lisaaSeikkailija,
-      valintaIkaAmmatti,
-      lisattyVarastoon,
+      varvaaSeikkailija,
+      kasitteleKentanMuutos,
+      merkitseLisatyksi,
     } = useVarvaaLogic({ aseet, seikkailijat, nimet, setSeikkailijat });
 
-    if (loading) {
+    if (ladataan) {
       return <Typography sx={{ color: 'white', textAlign: 'center', marginTop: 4 }}>Ladataan...</Typography>;
     }
 
-    if (error) {
-      return <Typography sx={{ color: '#FF3333', textAlign: 'center', marginTop: 4 }}>Virhe: {error.message || String(error)}</Typography>;
+    if (virhe) {
+      return <Typography sx={{ color: '#FF3333', textAlign: 'center', marginTop: 4 }}>Virhe: {virhe.message || String(virhe)}</Typography>;
     }
 
-    const handleSubmit = async (e) => {
+    const kasitteleLahetys = async (e) => {
         e.preventDefault();
-        if (kesken) return;
-        setKesken(true);
+        if (toimintoKesken) return;
+        setToimintoKesken(true);
         try {
-            await lisaaSeikkailija();
+            await varvaaSeikkailija();
         } finally {
-            setKesken(false);
+            setToimintoKesken(false);
         }
     };
 
@@ -46,7 +46,7 @@ function Varvaa() {
             spacing={{ xs: 2, sm: 4 }}
             sx={{ marginTop: 2, marginX: "auto", width: "80vw", justifyContent: "center" }}
             >
-            <Form onSubmit={handleSubmit} encType='multipart/form-data'>
+            <Form onSubmit={kasitteleLahetys} encType='multipart/form-data'>
                 <Box sx={{ width: { xs: '40vw', sm: '30vw' } }}>
                     <Typography sx={{ paddingTop: 2, paddingBottom: 4 }}>Valitse mitä ammattia haluat<br></br>seikkailijasi edustavan<br></br>ja minkä ikäinen hän on.</Typography>
                     <FormControl fullWidth>
@@ -57,7 +57,7 @@ function Varvaa() {
                             label="Ammatti"
                             name='ammatti'
                             value={seikkailija.ammatti}
-                            onChange={valintaIkaAmmatti}
+                            onChange={kasitteleKentanMuutos}
                         >
                             <MenuItem value="Ritari">Ritari</MenuItem>
                             <MenuItem value="Tiedustelija">Tiedustelija</MenuItem>
@@ -72,16 +72,16 @@ function Varvaa() {
                         min={15}
                         max={100}
                         value={seikkailija.ika}
-                        onChange={valintaIkaAmmatti}>
+                        onChange={kasitteleKentanMuutos}>
                     </Slider>
 
-                    <Button type='submit' sx={{ marginTop: 4 }} variant='outlined' color="secondary" onClick={lisattyVarastoon}>Värvää</Button>
+                    <Button type='submit' sx={{ marginTop: 4 }} variant='outlined' color="secondary" onClick={merkitseLisatyksi}>Värvää</Button>
                 </Box>
             </Form>
 
             <PaperOpaque sx={{ minWidth: '148px', width: { xs: '100%', sm: 400 } }}>
                 <Box sx={{ height: '100%', display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', minWidth: { xs: '100%', sm: 400 } }}>
-                    {kuvakytkin == true ?
+                    {naytaKuva == true ?
                         <Box sx={{ height: { xs: '50%', sm: 'auto' }, margin: { xs: '20px 0', sm: 0 } }}>
                             {seikkailija.kuva ?
                                 <CardMedia sx={{ height: { xs: '100%', sm: 'auto' }, width: { xs: '90%', sm: 200 } }}
@@ -103,7 +103,7 @@ function Varvaa() {
                         <Box sx={{ height: 'auto', width: 'auto' }}></Box>
                     }
                     <Box sx={{ height: { xs: '100%', sm: 'auto' }, margin: { xs: '0 20px', sm: 0 } }}>
-                        <MessageRenderer viesti={viesti} />
+                        <ViestiNakyma viesti={viesti} />
                     </Box>
 
                 </Box>

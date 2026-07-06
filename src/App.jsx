@@ -4,8 +4,8 @@ import Varustus from './components/Varustus';
 import Kauppa from './components/Kauppa';
 import Identiteetti from './components/Identiteetti';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import LoginPage from './components/LoginPage';
-import ProtectedRoute from './components/ProtectedRoute';
+import Kirjautuminen from './components/Kirjautuminen';
+import SuojattuReitti from './components/SuojattuReitti';
 import { createContext, useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -69,15 +69,15 @@ export const PaperOpaque = styled(Paper)(() => ({
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <LoginPage />,
+    element: <Kirjautuminen />,
   },
   {
     path: '/login',
-    element: <LoginPage />,
+    element: <Kirjautuminen />,
   },
   {
     path: '/app',
-    element: <ProtectedRoute><Valilehdet /></ProtectedRoute>,
+    element: <SuojattuReitti><Valilehdet /></SuojattuReitti>,
     children: [
       {
         path: '/app/',

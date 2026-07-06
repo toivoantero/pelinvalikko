@@ -1,7 +1,7 @@
 import { Grid, Box, FormControl, InputLabel, IconButton, Select, MenuItem, Card, CardHeader, CardMedia, CardContent, CardActions, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getSeikkailijat, getVarusteet, deleteSeikkailija } from '../services/pelidata';
+import { haeSeikkailijat, haeVarusteet, poistaSeikkailija } from '../services/pelidata';
 import { useLoaderData, Form, Link, redirect } from 'react-router-dom';
 
 function Varustus() {

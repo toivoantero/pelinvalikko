@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
-import { updateSeikkailija } from '../services/pelidata';
+import { paivitaSeikkailija } from '../services/pelidata';
 
 export function useIdentiteettiLogic({ initialSeikkailija, varusteet }) {
     const [seikkailija, setSeikkailija] = useState(initialSeikkailija);
     const [aseVirhe, setAseVirhe] = useState(false);
     const [viesti, setViesti] = useState(null);
     const [dialogivalinta, setDialogivalinta] = useState(null);
-    const [open, setOpen] = useState(false);
+    const [dialogiAuki, setDialogiAuki] = useState(false);
 
     const strategiAseet = (varusteet || []).filter(ase => ase.tyyppi == "Yhden käden" && ase.paino < 5 && ase.omistaja === 'pelaaja');
     const tiedustelijaAseet = (varusteet || []).filter(ase => ase.paino < 10 && ase.omistaja === 'pelaaja');
     const ritariAseet = (varusteet || []).filter(ase => ase.paino > 8 && ase.omistaja === 'pelaaja');
 
-    const muutaTieto = (e) => {
+    const kasitteleKentanMuutos = (e) => {
         const { name, value } = e.target;
 
         setSeikkailija((prevSeikkailija) => {
@@ -36,42 +36,42 @@ export function useIdentiteettiLogic({ initialSeikkailija, varusteet }) {
         });
     };
 
-    const handleClickOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const avaaDialogi = () => setDialogiAuki(true);
+    const suljeDialogi = () => setDialogiAuki(false);
 
-    const paivitaSeikkailija = async () => {
+    const tallennaMuutokset = async () => {
         if (seikkailija.ase === '-') {
             setAseVirhe(true);
-            setViesti({ kind: 'text', text: 'Seikkailijalle on valittava ase.', style: { color: '#FFCC33' } });
+            setViesti({ tyyppi: 'teksti', teksti: 'Seikkailijalle on valittava ase.', style: { color: '#FFCC33' } });
             setDialogivalinta({ type: 'close' });
-            handleClickOpen();
+            avaaDialogi();
             return;
         }
 
         try {
-            const response = await updateSeikkailija(seikkailija.id, seikkailija);
+            const response = await paivitaSeikkailija(seikkailija.id, seikkailija);
             if (response.status === 200) {
                 setAseVirhe(false);
-                setViesti({ kind: 'text', text: 'Seikkailijan tiedot ovat nyt muutetut', style: { color: '#FFCC33' } });
+                setViesti({ tyyppi: 'teksti', teksti: 'Seikkailijan tiedot ovat nyt muutetut', style: { color: '#FFCC33' } });
                 setDialogivalinta({ type: 'close' });
-                handleClickOpen();
+                avaaDialogi();
             } else {
-                setViesti({ kind: 'text', text: 'Päivitys epäonnistui', style: { color: '#FF3333' } });
+                setViesti({ tyyppi: 'teksti', teksti: 'Päivitys epäonnistui', style: { color: '#FF3333' } });
                 setDialogivalinta({ type: 'close' });
-                handleClickOpen();
+                avaaDialogi();
             }
         } catch (error) {
             console.error('Virhe päivitettäessä tietokantaa:', error);
-            setViesti({ kind: 'text', text: 'Virhe päivitettäessä. Yritä uudelleen.', style: { color: '#FF3333' } });
+            setViesti({ tyyppi: 'teksti', teksti: 'Virhe päivitettäessä. Yritä uudelleen.', style: { color: '#FF3333' } });
             setDialogivalinta({ type: 'close' });
-            handleClickOpen();
+            avaaDialogi();
         }
     };
 
-    const poistaSeikkailija = (id) => {
-        setViesti({ kind: 'text', text: 'Irtisanotaanko seikkailija?', style: { color: '#FFCC33' } });
+    const vahvistaSeikkailijanPoisto = (id) => {
+        setViesti({ tyyppi: 'teksti', teksti: 'Irtisanotaanko seikkailija?', style: { color: '#FFCC33' } });
         setDialogivalinta({ type: 'confirmDelete', id });
-        handleClickOpen();
+        avaaDialogi();
     };
 
     return {
@@ -83,12 +83,12 @@ export function useIdentiteettiLogic({ initialSeikkailija, varusteet }) {
         setViesti,
         dialogivalinta,
         setDialogivalinta,
-        open,
-        handleClickOpen,
-        handleClose,
-        muutaTieto,
-        paivitaSeikkailija,
-        poistaSeikkailija,
+        dialogiAuki,
+        avaaDialogi,
+        suljeDialogi,
+        kasitteleKentanMuutos,
+        tallennaMuutokset,
+        vahvistaSeikkailijanPoisto,
         strategiAseet,
         tiedustelijaAseet,
         ritariAseet
